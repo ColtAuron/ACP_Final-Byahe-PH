@@ -7,6 +7,14 @@ class Route:
         self.disabled = disabled
         Route.all.append(self)
 
+class Toda:
+    stations = []
+    def __init__(self, position, locName: str, disabled=True ):
+        self.position = position
+        self.locName = locName
+        self.disabled = disabled
+        Toda.stations.append(self)
+
 Bauan = Route(
         [(13.7907420, 121.0101281), # Harap ng Jolibee Bauan
          (13.7922974, 121.0101442), 
@@ -363,7 +371,7 @@ Capitolio = Route(  #Follow the template and refer sa example sa taas
          (13.7560900, 121.0707058), #SM Batangas
 
          ],
-         color = "White",
+         color = "Gray",
          name = "Capitolio",
          disabled = False,   #Set to false para makita nyo sa map TY!
          )
@@ -443,7 +451,8 @@ Balagtas = Route(
          (13.7594201, 121.0588877),
          (13.7598871, 121.0589103),
          (13.7603676, 121.0590111),
-         (13.7602946, 121.0575466),
+         (13.7608619, 121.0590486), 
+         (13.7607749, 121.0574302),
          (13.7621806, 121.0571585),
          (13.7633123, 121.0579496),
          (13.7648785, 121.0602297),
@@ -481,7 +490,6 @@ Balagtas = Route(
          name = "Balagtas",
          disabled = False,   #Set to false para makita nyo sa map TY!
          )
-
 Alangilan= Route(
         [(13.7893715, 121.0620127), 
          (13.7892465, 121.0619483),
@@ -636,3 +644,50 @@ Alangilan= Route(
          name = "Alangilan",
          disabled = False,  
          )
+
+Coliseum_Toda = Toda(
+    position = (13.7525742, 121.0520111),
+    locName = "Coliseum",
+    disabled = False
+)
+
+PlazaMabini_Toda = Toda(
+    position = (13.7553644, 121.0594922),
+    locName = "Plaza Mabini",
+    disabled = False
+)
+
+RizalAve_Toda = Toda(
+    position = (13.7553557, 121.0517192),
+    locName = "Rizal Ave.",
+    disabled = False
+)
+
+Diversion_Toda = Toda(
+    position= (13.7716671, 121.0507626),
+    locName= "Diversion",
+    disabled= False
+)
+
+SanAntonio_Toda = Toda(
+    position= (13.7880907, 121.0202637),
+    locName= "San Antonio",
+    disabled= False
+)
+
+BauanPubMarket_Toda = Toda(
+    position = (13.7925640, 121.0100531),
+    locName= "Bauan Public Market",
+    disabled= False
+)
+
+Goldland_Toda = Toda(
+    position= (13.7924336, 121.0109337),
+    locName= "Goldland"
+    disabled= False
+)
+#13.7880907 121.0202637 San Antonio
+
+#13.7925640 121.0100531 Bauan Public Market
+
+#13.7924336 121.0109337 GoldLand
