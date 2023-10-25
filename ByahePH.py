@@ -5,6 +5,7 @@ import os
 
 path_routes = []
 toda_station = []
+bus_terminal = []
 
 customtkinter.set_default_color_theme("green")
 
@@ -142,13 +143,20 @@ class App(customtkinter.CTk):
                 self.map_widget.delete(toda)
             toda_station.clear()
         else:
-            for toda in config.Toda.stations:
+            for toda in config.Toda.all:
                 if toda.disabled == False:
                     toda_station.append(self.map_widget.set_marker(toda.position[0], toda.position[1], text=f"{toda.locName} Toda"))
         pass
 
     def show_bus(self):
-        # Implement code to show Bus on the map
+        if bus_terminal:
+            for marker in bus_terminal:
+                self.map_widget.delete(marker)
+            bus_terminal.clear()
+        else:
+            for marker in config.Terminal.all:
+                if marker.disabled == False:
+                    bus_terminal.append(self.map_widget.set_marker(marker.position[0], marker.position[1], text=f"{marker.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB" ))
         pass
 
     def on_closing(self, event=0):

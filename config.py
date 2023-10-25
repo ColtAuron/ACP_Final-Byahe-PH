@@ -8,12 +8,20 @@ class Route:
         Route.all.append(self)
 
 class Toda:
-    stations = []
+    all = []
     def __init__(self, position, locName: str, disabled=True ):
         self.position = position
         self.locName = locName
         self.disabled = disabled
-        Toda.stations.append(self)
+        Toda.all.append(self)
+
+class Terminal:
+    all = []
+    def __init__(self, position, locName: str, disabled=True ):
+        self.position = position
+        self.locName = locName
+        self.disabled = disabled
+        Terminal.all.append(self)
 
 Bauan = Route(
         [(13.7907420, 121.0101281), # Harap ng Jolibee Bauan
@@ -490,6 +498,7 @@ Balagtas = Route(
          name = "Balagtas",
          disabled = False,   #Set to false para makita nyo sa map TY!
          )
+
 Alangilan= Route(
         [(13.7893715, 121.0620127), 
          (13.7892465, 121.0619483),
@@ -642,7 +651,7 @@ Alangilan= Route(
          ],
          color = "Yellow",
          name = "Alangilan",
-         disabled = False,  
+         disabled = True,  
          )
 
 Coliseum_Toda = Toda(
@@ -683,7 +692,31 @@ BauanPubMarket_Toda = Toda(
 
 Goldland_Toda = Toda(
     position= (13.7924336, 121.0109337),
-    locName= "Goldland"
+    locName= "Goldland",
+    disabled= False
+)
+
+Balagtas_Toda = Toda(
+    position= (13.7980044, 121.0710054),
+    locName= "Balagtas",
+    disabled= False
+)
+
+GoldenCountry_Toda = Toda(
+    position= (13.7865083, 121.0694451),
+    locName= "Golden Country",
+    disabled= False
+)
+
+BatangasPier_Terminal = Terminal(
+    position=(13.7536221, 121.0434020),
+    locName=("Batangas Pier"),
+    disabled= False
+)
+
+BatangasGrand_Terminal = Terminal(
+    position= (13.7894298, 121.0627731),
+    locName=("Batangas Grand"),
     disabled= False
 )
 #13.7880907 121.0202637 San Antonio
