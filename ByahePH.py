@@ -3,6 +3,43 @@ from tkintermapview import TkinterMapView
 import os
 import sqlite3
 
+class Route:
+    all = []
+    def __init__(self, points, color:str, name:str, disabled=True):
+        self.points = points
+        self.color = color
+        self.name = name
+        self.disabled = disabled
+        Route.all.append(self)
+
+class Toda:
+    all = []
+    def __init__(self, position, locName:str, disabled=True):
+        self.position = position
+        self.locName = locName
+        self.disabled = disabled
+        Toda.all.append(self)
+
+    def X(self):
+        return self.position[0]
+    
+    def Y(self):
+        return self.position[1]
+
+class Terminal:
+    all = []
+    def __init__(self, position, locName: str, disabled=True):
+        self.position = position
+        self.locName = locName
+        self.disabled = disabled
+        Terminal.all.append(self)
+
+    def X(self):
+        return self.position[0]
+    
+    def Y(self):
+        return self.position[1]
+
 #Connect to database
 con = sqlite3.connect('bphData.db')
 c = con.cursor()
@@ -19,6 +56,17 @@ toda_table = c.fetchall()
 
 c.execute("SELECT * FROM TERMINAL")
 terminal_table = c.fetchall()
+
+#input tables information to classes
+
+for jeepneys in route_table:
+    c.execute(f"SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum = {jeepneys[0]}") 
+    points = c.fetchall()
+    Route(points, jeepneys[2], jeepneys[1], jeepneys[3])
+for toda in toda_table:
+    Toda((toda[1],toda[2]),toda[3],toda[4])
+for termi in terminal_table:
+    Terminal((termi[1],termi[2]),termi[3],termi[4])
 
 path_routes = []
 toda_station = []
@@ -143,17 +191,14 @@ class App(customtkinter.CTk):
         self.map_widget.set_zoom(current_zoom - 1)
 
     def show_jeep(self):
-        # Implement code to show Jeep on the map
         if path_routes:
             for jeepneys in path_routes:
                 self.map_widget.delete(jeepneys)
             path_routes.clear()
         else:
-            for jeepneys in route_table:
-                if jeepneys[3] == False:
-                    c.execute(f"SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum = {jeepneys[0]}")
-                    points = c.fetchall()
-                    path_routes.append(self.map_widget.set_path(points, color = jeepneys[2], width = 3))
+            for jeepneys in Route.all:
+                if jeepneys.disabled == False:
+                    path_routes.append(self.map_widget.set_path(jeepneys.points, color = jeepneys.color, width = 3))
         pass
 
     def show_tricycle(self):
@@ -162,9 +207,9 @@ class App(customtkinter.CTk):
                 self.map_widget.delete(toda)
             toda_station.clear()
         else:
-            for toda in toda_table:
-                if toda[4] == False:
-                    toda_station.append(self.map_widget.set_marker(toda[1], toda[2], text=f"{toda[3]} Toda"))
+            for toda in Toda.all:
+                if toda.disabled == False:
+                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda"))
         pass
 
     def show_bus(self):
@@ -173,9 +218,9 @@ class App(customtkinter.CTk):
                 self.map_widget.delete(marker)
             bus_terminal.clear()
         else:
-            for marker in terminal_table:
-                if marker[4] == False:
-                    bus_terminal.append(self.map_widget.set_marker(marker[1], marker[2], text=f"{marker[3]} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB" ))
+            for termi in Terminal.all:
+                if termi.disabled == False:
+                    bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB" ))
         pass
 
     def on_closing(self, event=0):
