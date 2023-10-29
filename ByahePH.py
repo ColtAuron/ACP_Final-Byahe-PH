@@ -1,7 +1,24 @@
 import customtkinter
 from tkintermapview import TkinterMapView
-import config
 import os
+import sqlite3
+
+#Connect to database
+con = sqlite3.connect('bphData.db')
+c = con.cursor()
+
+#Load tables
+c.execute("SELECT * FROM POINTS")
+points_table = c.fetchall()
+
+c.execute("SELECT * FROM ROUTE")
+route_table = c.fetchall()
+
+c.execute("SELECT * FROM TODA")
+toda_table = c.fetchall()
+
+c.execute("SELECT * FROM TERMINAL")
+terminal_table = c.fetchall()
 
 path_routes = []
 toda_station = []
@@ -132,9 +149,11 @@ class App(customtkinter.CTk):
                 self.map_widget.delete(jeepneys)
             path_routes.clear()
         else:
-            for jeepneys in config.Route.all:
-                if jeepneys.disabled == False:
-                    path_routes.append(self.map_widget.set_path(jeepneys.points, color = jeepneys.color, width = 3))
+            for jeepneys in route_table:
+                if jeepneys[3] == False:
+                    c.execute(f"SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum = {jeepneys[0]}")
+                    points = c.fetchall()
+                    path_routes.append(self.map_widget.set_path(points, color = jeepneys[2], width = 3))
         pass
 
     def show_tricycle(self):
@@ -143,9 +162,9 @@ class App(customtkinter.CTk):
                 self.map_widget.delete(toda)
             toda_station.clear()
         else:
-            for toda in config.Toda.all:
-                if toda.disabled == False:
-                    toda_station.append(self.map_widget.set_marker(toda.position[0], toda.position[1], text=f"{toda.locName} Toda"))
+            for toda in toda_table:
+                if toda[4] == False:
+                    toda_station.append(self.map_widget.set_marker(toda[1], toda[2], text=f"{toda[3]} Toda"))
         pass
 
     def show_bus(self):
@@ -154,9 +173,9 @@ class App(customtkinter.CTk):
                 self.map_widget.delete(marker)
             bus_terminal.clear()
         else:
-            for marker in config.Terminal.all:
-                if marker.disabled == False:
-                    bus_terminal.append(self.map_widget.set_marker(marker.position[0], marker.position[1], text=f"{marker.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB" ))
+            for marker in terminal_table:
+                if marker[4] == False:
+                    bus_terminal.append(self.map_widget.set_marker(marker[1], marker[2], text=f"{marker[3]} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB" ))
         pass
 
     def on_closing(self, event=0):

@@ -1,5 +1,8 @@
+import sqlite3
+
 class Route:
     all = []
+    id = 0
     def __init__(self, points, color: str, name: str, disabled=True, ):
         self.points = points
         self.color = color
@@ -7,21 +10,32 @@ class Route:
         self.disabled = disabled
         Route.all.append(self)
 
+        Route.id += 1
+        self.id = Route.id
+
 class Toda:
     all = []
+    id = 0
     def __init__(self, position, locName: str, disabled=True ):
         self.position = position
         self.locName = locName
         self.disabled = disabled
         Toda.all.append(self)
 
+        Toda.id += 1
+        self.id = Toda.id
+
 class Terminal:
     all = []
+    id = 0
     def __init__(self, position, locName: str, disabled=True ):
         self.position = position
         self.locName = locName
         self.disabled = disabled
         Terminal.all.append(self)
+
+        Terminal.id += 1
+        self.id = Terminal.id
 
 Bauan = Route(
         [(13.7907420, 121.0101281), # Harap ng Jolibee Bauan
@@ -549,8 +563,7 @@ Alangilan= Route(
          (13.7754027, 121.0664224),
          (13.7743121, 121.0662775),
          (13.7728064, 121.0659891),
-         (13.7720596, 121.0658149),
-         (13.7714761, 121.0656892),
+         (13.7725205, 121.0659613),
          (13.7709550, 121.0655819),
          (13.7696955, 121.0654907),
          (13.7661550, 121.0649332),
@@ -594,7 +607,10 @@ Alangilan= Route(
          (13.7693116, 121.0645041),
          (13.7705985, 121.0652899),
          (13.7712508, 121.0655458),
-         (13.7765692, 121.0665744),
+         (13.7725572, 121.0658721),
+         (13.7763003, 121.0664651),
+         (13.7776456, 121.0667774),
+         (13.7787251, 121.0671346),
          (13.7799877, 121.0677117),
          (13.7823504, 121.0681856),
          (13.7848437, 121.0686339),
@@ -622,7 +638,7 @@ Alangilan= Route(
          (13.7889659, 121.0631166),
          (13.7894618, 121.0620525),
          ],
-         color = "Yellow",
+         color = "Green",
          name = "Alangilan",
          disabled = False,  
          )
@@ -692,8 +708,108 @@ BatangasGrand_Terminal = Terminal(
     locName=("Batangas Grand"),
     disabled= False
 )
-#13.7880907 121.0202637 San Antonio
 
-#13.7925640 121.0100531 Bauan Public Market
+con = sqlite3.connect('bphData.db')
+c = con.cursor()
+c.execute("PRAGMA foreign_keys = ON")
 
-#13.7924336 121.0109337 GoldLand
+# command = ('''CREATE TABLE IF NOT EXISTS ROUTE(
+#             RouteNum INTEGER PRIMARY KEY,
+#             Name Varchar(30),
+#             Color Varchar(20),
+#             Disabled TINYINT(1)
+#            )''')
+
+# con.execute(command)
+
+# command = ('''CREATE TABLE IF NOT EXISTS POINTS(
+#            Id INTEGER PRIMARY KEY,
+#            Point_X FLOAT(3, 7),
+#            Point_Y FLOAT(3, 7),
+#            RouteNum INTEGER,
+#            FOREIGN KEY(RouteNum) REFERENCES ROUTE(RouteNum)
+# )''')
+
+# con.execute(command)
+
+# command = ('''CREATE TABLE IF NOT EXISTS TODA(
+#             TodaID INTEGER PRIMARY KEY,
+#             Point_X FLOAT(3, 7),
+#             Point_Y FLOAT(3, 7),
+#             locName Varchar(100),
+#             Disabled TINYINT(1)
+#            )''')
+
+# con.execute(command)
+
+# command = ('''CREATE TABLE IF NOT EXISTS TERMINAL(
+#             TemiID INTEGER PRIMARY KEY,
+#             Point_X FLOAT(3, 7),
+#             Point_Y FLOAT(3, 7),
+#             locName Varchar(100),
+#             Disabled TINYINT(1)
+#            )''')
+
+# con.execute(command)
+
+# tosql = []
+# for todas in Toda.all:
+#     tosql.append(tuple((todas.id, todas.position[0], todas.position[1], todas.locName, todas.disabled)))
+
+# c.executemany("INSERT INTO TODA VALUES (?,?,?,?,?)", tosql)
+# con.commit()
+
+# tosql = []
+# for termi in Terminal.all:
+#     tosql.append(tuple((termi.id, termi.position[0], termi.position[1], termi.locName, termi.disabled)))
+
+# c.executemany("INSERT INTO TERMINAL VALUES (?,?,?,?,?)", tosql)
+# con.commit()
+
+# tosql = []
+# for jeepneys in Route.all:
+#     tosql.append(tuple((jeepneys.id, jeepneys.name, jeepneys.color, int(jeepneys.disabled))))
+
+# c.executemany("INSERT INTO ROUTE VALUES (?,?,?,?)", tosql)
+
+# con.commit()
+
+# tosql = []
+
+# for jeepneys in Route.all:
+#     for points in jeepneys.points:
+#         tosql.append(tuple((points[0], points[1], jeepneys.id)))
+
+# c.executemany("INSERT INTO POINTS(Point_X, Point_Y, RouteNum) VALUES (?,?,?)", tosql)
+
+# con.commit()
+
+# c.execute("SELECT * FROM POINTS")
+# points_table = c.fetchall()
+
+# c.execute("SELECT * FROM ROUTE")
+# route_table = c.fetchall()
+
+# for jeepneys in route_table:
+#     if jeepneys[3] == 0:
+#         c.execute(f"SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum = {jeepneys[0]}")
+#         points = c.fetchall()
+#         print(points, color = jeepneys[2], width = 3)
+
+# c.execute("SELECT * FROM TODA")
+# toda_table = c.fetchall()
+# for toda in toda_table:
+#     print(toda)
+
+# c.execute("SELECT * FROM TERMINAL")
+# termi_table = c.fetchall()
+# for toda in termi_table:
+#     print(toda)
+
+con.close()
+
+
+
+
+
+
