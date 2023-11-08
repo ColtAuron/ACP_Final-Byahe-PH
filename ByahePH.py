@@ -88,8 +88,8 @@ customtkinter.set_default_color_theme("dark-blue")
 
 class App(customtkinter.CTk):
     APP_NAME = "ByahePH"
-    WIDTH = 800
-    HEIGHT = 500
+    WIDTH = 1400
+    HEIGHT = 700
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -143,11 +143,14 @@ class App(customtkinter.CTk):
         self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", command=self.show_bus)
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
-        self.textbox = customtkinter.CTkTextbox(master=self.frame_left, width=170, height=100)
+        self.textbox = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
         self.textbox.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
 
+        self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130)
+        self.entry_1.grid(row=6, column=0, sticky="we", padx=(12, 12), pady=12)
+       
         self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_suggest)
-        self.button_5.grid(pady=(10, 10), padx=(20, 20), row=6, column=0)
+        self.button_5.grid(pady=(10, 10), padx=(20, 20), row=7, column=0)
 
         # Main frame
         self.frame_right.grid_rowconfigure(1, weight=1)
@@ -166,19 +169,19 @@ class App(customtkinter.CTk):
 
         
 
-        self.entry = customtkinter.CTkEntry(master=self.frame_right, placeholder_text="Type Address")
-        self.entry.grid(row=0, column=0, sticky="we", padx=(12, 0), pady=12)
-        self.entry.bind("<Return>", self.search_event)
+        self.entry_2 = customtkinter.CTkEntry(master=self.frame_right, placeholder_text="Type Address")
+        self.entry_2.grid(row=0, column=0, sticky="we", padx=(12, 0), pady=12)
+        self.entry_2.bind("<Return>", self.search_event)
 
-        self.button_6 = customtkinter.CTkButton(master=self.frame_right,
-                                                text="Search",
-                                                width=90,
-                                                command=self.search_event)
+        self.button_6 = customtkinter.CTkButton(master=self.frame_right, text="Search", width=90, command=self.search_event)
         self.button_6.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
 
         self.button_7 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
         self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
 
+        
+
+        
 
         # Set default values
         self.map_widget.set_address("Batangas City")
@@ -186,7 +189,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Light", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
-        self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle and draw""\n")
+        self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle & draw""\n")
         self.textbox.configure(state="disabled")
 
         #variables for draw
