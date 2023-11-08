@@ -179,9 +179,6 @@ class App(customtkinter.CTk):
         self.button_7 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
         self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
 
-        
-
-        
 
         # Set default values
         self.map_widget.set_address("Batangas City")
@@ -190,6 +187,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
         self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle and draw""\n")
+        self.textbox.configure(state="disabled")
 
         #variables for draw
         self.suggestion_active = 0
