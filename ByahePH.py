@@ -185,7 +185,7 @@ class App(customtkinter.CTk):
 
         # Set default values
         self.map_widget.set_address("Batangas City")
-        self.map_widget.set_zoom(11)
+        self.map_widget.set_zoom(13)
         self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Light", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
