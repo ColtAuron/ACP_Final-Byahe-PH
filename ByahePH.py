@@ -120,7 +120,7 @@ class App(customtkinter.CTk):
         # Sidebar frame
         self.frame_left = customtkinter.CTkFrame(master=self, width=400, fg_color=None)
         self.frame_left.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
-        self.frame_left.grid_rowconfigure(6, weight=1)
+        self.frame_left.grid_rowconfigure(8, weight=1)
 
         # Main frame
         self.frame_right = customtkinter.CTkFrame(master=self)
@@ -131,18 +131,23 @@ class App(customtkinter.CTk):
         # Sidebar frame
         self.frame_left.grid_rowconfigure(1, weight=0)
 
-        self.button_7 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
-        self.button_7.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
-        print(self.button_7._fg_color)
+        self.button_1 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
+        self.button_1.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
 
-        self.button_3 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", command=self.show_jeep)
-        self.button_3.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
+        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", command=self.show_jeep)
+        self.button_2.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
 
-        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Tricycle", command=self.show_tricycle)
-        self.button_4.grid(pady=(10, 10), padx=(20, 20), row=3, column=0)
+        self.button_3 = customtkinter.CTkButton(master=self.frame_left, text="Tricycle", command=self.show_tricycle)
+        self.button_3.grid(pady=(10, 10), padx=(20, 20), row=3, column=0)
 
-        self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Bus", command=self.show_bus)
-        self.button_5.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
+        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", command=self.show_bus)
+        self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
+
+        self.textbox = customtkinter.CTkTextbox(master=self.frame_left, width=170, height=100)
+        self.textbox.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
+
+        self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_suggest)
+        self.button_5.grid(pady=(10, 10), padx=(20, 20), row=6, column=0)
 
         # Main frame
         self.frame_right.grid_rowconfigure(1, weight=1)
@@ -165,14 +170,16 @@ class App(customtkinter.CTk):
         self.entry.grid(row=0, column=0, sticky="we", padx=(12, 0), pady=12)
         self.entry.bind("<Return>", self.search_event)
 
-        self.button_5 = customtkinter.CTkButton(master=self.frame_right,
+        self.button_6 = customtkinter.CTkButton(master=self.frame_right,
                                                 text="Search",
                                                 width=90,
                                                 command=self.search_event)
-        self.button_5.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
+        self.button_6.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
 
-        self.button_6 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
-        self.button_6.grid(row=0, column=2, sticky="we", padx=(12, 0), pady=12)
+        self.button_7 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
+        self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
+
+        
 
         
 
@@ -182,6 +189,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Light", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
+        self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle and draw""\n")
 
         #variables for draw
         self.suggestion_active = 0
@@ -197,6 +205,7 @@ class App(customtkinter.CTk):
             self.bind('<space>', self.toggle_coords)
             self.suggestion_active = 1 #Suggestion is active
             self.button_7._fg_color = 'blue'
+
         else:
             self.unbind('<space>')
             self.map_widget.canvas.config(cursor="arrow")
@@ -218,6 +227,9 @@ class App(customtkinter.CTk):
         pass
 
     def show_login(self):
+        pass
+
+    def show_submit(self):
         pass
 
     def toggle_coords(self, event=None):
