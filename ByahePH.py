@@ -41,7 +41,9 @@ class Terminal:
         return self.position[1]
 
 #Connect to database
-con = sqlite3.connect('bphData.db')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(base_dir, "bphData.db")
+con = sqlite3.connect(db_path)
 c = con.cursor()
 
 #Load tables
@@ -83,7 +85,7 @@ c.execute(command)
 c.execute("SELECT Point_X, Point_Y FROM DRAWPOINTS")
 Draw_table = c.fetchall()
 
-customtkinter.set_default_color_theme("green")
+customtkinter.set_default_color_theme("pink")
 
 class App(customtkinter.CTk):
     APP_NAME = "ByahePH"
@@ -169,8 +171,7 @@ class App(customtkinter.CTk):
                                                 command=self.search_event)
         self.button_5.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
 
-        self.map_widget.add_right_click_menu_command(label="Add Marker", command=self.add_marker_event, pass_coords=True)
-
+        self.map_widget.canvas.unbind("<Button-3>")
         self.bind('<space>', self.toggle_coords)
 
         # Set default values

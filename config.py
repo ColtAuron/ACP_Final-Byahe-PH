@@ -752,15 +752,15 @@ c.execute("PRAGMA foreign_keys = ON")
 
 # con.execute(command)
 
-command = ('''CREATE TABLE IF NOT EXISTS DRAWPOINTS(
-           Id INTEGER PRIMARY KEY,
-           Point_X FLOAT(3, 7),
-           Point_Y FLOAT(3, 7)
-)''')
+# command = ('''CREATE TABLE IF NOT EXISTS DRAWPOINTS(
+#            Id INTEGER PRIMARY KEY,
+#            Point_X FLOAT(3, 7),
+#            Point_Y FLOAT(3, 7)
+# )''')
 
-con.execute(command)
+# con.execute(command)
 
-c.execute
+# c.execute
 
 # tosql = []
 # for todas in Toda.all:
