@@ -85,7 +85,7 @@ c.execute(command)
 c.execute("SELECT Point_X, Point_Y FROM DRAWPOINTS")
 Draw_table = c.fetchall()
 
-customtkinter.set_default_color_theme("pink")
+customtkinter.set_default_color_theme("green")
 
 class App(customtkinter.CTk):
     APP_NAME = "ByahePH"
