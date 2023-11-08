@@ -133,6 +133,7 @@ class App(customtkinter.CTk):
 
         self.button_7 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
         self.button_7.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
+        print(self.button_7._fg_color)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", command=self.show_jeep)
         self.button_3.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
@@ -173,7 +174,7 @@ class App(customtkinter.CTk):
         self.button_6 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
         self.button_6.grid(row=0, column=2, sticky="we", padx=(12, 0), pady=12)
 
-        self.bind('<space>', self.toggle_coords)
+        
 
         # Set default values
         self.map_widget.set_address("Batangas City")
@@ -183,13 +184,37 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
 
         #variables for draw
+        self.suggestion_active = 0
         self.temp_points = None
         self.start_points = None
         self.drawed_coordinates = []
+        self.marker_coords = None
         for items in Draw_table:
             self.add_to_coords(x=items[0],y=items[1])
-
+        
     def show_suggest(self):
+        if self.suggestion_active == 0:
+            self.bind('<space>', self.toggle_coords)
+            self.suggestion_active = 1 #Suggestion is active
+            self.button_7._fg_color = 'blue'
+        else:
+            self.unbind('<space>')
+            self.map_widget.canvas.config(cursor="arrow")
+            self.map_widget.canvas.unbind("<Button-1>")
+            self.unbind("<Control-z>")
+            self.map_widget.canvas.bind("<B1-Motion>", self.map_widget.mouse_move)
+            self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
+            self.suggestion_active = 0 #Suggestion is inactive
+            self.button_7._fg_color = list(('#3a7ebf','#1f538d'))
+            if self.marker_coords:
+                self.marker_coords.delete()
+            self.drawed_coordinates.clear()
+            self.start_points = None
+            if self.temp_points:
+                self.temp_points.delete()
+            self.temp_points = None
+            c.execute("DELETE FROM DRAWPOINTS")
+            con.commit()
         pass
 
     def show_login(self):
