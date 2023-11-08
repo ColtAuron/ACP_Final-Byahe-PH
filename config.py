@@ -752,6 +752,16 @@ c.execute("PRAGMA foreign_keys = ON")
 
 # con.execute(command)
 
+command = ('''CREATE TABLE IF NOT EXISTS DRAWPOINTS(
+           Id INTEGER PRIMARY KEY,
+           Point_X FLOAT(3, 7),
+           Point_Y FLOAT(3, 7)
+)''')
+
+con.execute(command)
+
+c.execute
+
 # tosql = []
 # for todas in Toda.all:
 #     tosql.append(tuple((todas.id, todas.position[0], todas.position[1], todas.locName, todas.disabled)))
@@ -808,6 +818,13 @@ c.execute("PRAGMA foreign_keys = ON")
 
 con.close()
 
+x = 3.14159265
+
+# Format x as a string with two decimal points
+y = round(x, 7)
+
+print(y)
+print(type(y))
 
 
 

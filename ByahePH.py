@@ -72,6 +72,17 @@ path_routes = []
 toda_station = []
 bus_terminal = []
 
+command = ('''CREATE TABLE IF NOT EXISTS DRAWPOINTS(
+           Id INTEGER PRIMARY KEY,
+           Point_X FLOAT(3, 7),
+           Point_Y FLOAT(3, 7)
+)''')
+
+c.execute(command)
+
+c.execute("SELECT Point_X, Point_Y FROM DRAWPOINTS")
+Draw_table = c.fetchall()
+
 customtkinter.set_default_color_theme("green")
 
 class App(customtkinter.CTk):
@@ -168,9 +179,13 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Dark", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
+
+        #variables for draw
         self.temp_points = None
         self.start_points = None
         self.drawed_coordinates = []
+        for items in Draw_table:
+            self.add_to_coords(x=items[0],y=items[1])
 
     def toggle_coords(self, event=None):
         if self.map_widget.canvas.cget('cursor') == "arrow":
@@ -187,21 +202,30 @@ class App(customtkinter.CTk):
             self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
 
     def draw_coords(self, event=(0,0)):
-        mouse_pos = self.map_widget.convert_canvas_coords_to_decimal_coords(canvas_x=event.x,canvas_y=event.y)
-        self.drawed_coordinates.append(mouse_pos)
+        raw_mouse = self.map_widget.convert_canvas_coords_to_decimal_coords(canvas_x=event.x,canvas_y=event.y)
+        mouse_pos = tuple((round(raw_mouse[0], 7),round(raw_mouse[1], 7)))
+        c.execute("INSERT INTO DRAWPOINTS (Point_X, Point_Y) values (?,?)", mouse_pos)
+        con.commit()
+        self.add_to_coords(x=mouse_pos[0], y=mouse_pos[1])
+
+    def add_to_coords(self, x, y):
+        self.drawed_coordinates.append(tuple((x, y)))
         if self.start_points:
             if self.temp_points:
-                self.temp_points.add_position(mouse_pos[0], mouse_pos[1])
+                self.temp_points.add_position(x, y)
             else:
                 self.marker_coords.delete()
-                self.temp_points = self.map_widget.set_path([self.start_points, mouse_pos], color='Black', width = 3)
+                self.temp_points = self.map_widget.set_path([self.start_points, tuple((x,y))], color='Black', width = 3)
         else:   
-            self.start_points = mouse_pos
-            self.marker_coords = self.map_widget.set_marker(mouse_pos[0], mouse_pos[1], text="Starting Point")
+            self.start_points = tuple((x, y))
+            self.marker_coords = self.map_widget.set_marker(x, y, text="Starting Point")
+
 
     def undo_draw_coords(self, event=None):
         if self.start_points:
             last_coord = self.drawed_coordinates[-1]
+            c.execute("DELETE FROM DRAWPOINTS WHERE Id = (SELECT Max(Id) FROM DRAWPOINTS)")
+            con.commit()
             if len(self.drawed_coordinates) > 2:
                 self.temp_points.remove_position(last_coord[0], last_coord[1])
                 self.drawed_coordinates.pop()
