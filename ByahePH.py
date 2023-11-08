@@ -160,13 +160,62 @@ class App(customtkinter.CTk):
 
         self.map_widget.add_right_click_menu_command(label="Add Marker", command=self.add_marker_event, pass_coords=True)
 
+        self.bind('<space>', self.toggle_coords)
+
         # Set default values
         self.map_widget.set_address("Batangas City")
         self.map_widget.set_zoom(11)
         self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Dark", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
+        self.temp_points = None
+        self.start_points = None
+        self.drawed_coordinates = []
 
+    def toggle_coords(self, event=None):
+        if self.map_widget.canvas.cget('cursor') == "arrow":
+            self.map_widget.canvas.config(cursor="tcross")
+            self.map_widget.canvas.unbind("<B1-Motion>")
+            self.map_widget.canvas.unbind("<Button-1>")
+            self.map_widget.canvas.bind("<Button-1>", self.draw_coords)
+            self.bind("<Control-z>", self.undo_draw_coords)
+        else:
+            self.map_widget.canvas.config(cursor="arrow")
+            self.map_widget.canvas.unbind("<Button-1>")
+            self.unbind("<Control-z>")
+            self.map_widget.canvas.bind("<B1-Motion>", self.map_widget.mouse_move)
+            self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
+
+    def draw_coords(self, event=(0,0)):
+        mouse_pos = self.map_widget.convert_canvas_coords_to_decimal_coords(canvas_x=event.x,canvas_y=event.y)
+        self.drawed_coordinates.append(mouse_pos)
+        if self.start_points:
+            if self.temp_points:
+                self.temp_points.add_position(mouse_pos[0], mouse_pos[1])
+            else:
+                self.marker_coords.delete()
+                self.temp_points = self.map_widget.set_path([self.start_points, mouse_pos], color='Black', width = 3)
+        else:   
+            self.start_points = mouse_pos
+            self.marker_coords = self.map_widget.set_marker(mouse_pos[0], mouse_pos[1], text="Starting Point")
+
+    def undo_draw_coords(self, event=None):
+        if self.start_points:
+            last_coord = self.drawed_coordinates[-1]
+            if len(self.drawed_coordinates) > 2:
+                self.temp_points.remove_position(last_coord[0], last_coord[1])
+                self.drawed_coordinates.pop()
+            elif len(self.drawed_coordinates) > 1:
+                self.temp_points.delete()
+                self.temp_points = None
+                self.drawed_coordinates.pop()
+                self.marker_coords = self.map_widget.set_marker(self.start_points[0], self.start_points[1], text="Starting Point")
+            else:
+                self.marker_coords.delete()
+                self.drawed_coordinates.clear()
+                self.start_points = None
+                self.temp_points = None
+                
     def search_event(self, event=None):
         self.map_widget.set_address(self.entry.get())
 
