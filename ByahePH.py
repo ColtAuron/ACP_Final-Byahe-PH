@@ -40,9 +40,8 @@ class Terminal:
     def Y(self):
         return self.position[1]
 
-#Connect to database
-base_dir = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(base_dir, "bphData.db")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "bphData.db")
 con = sqlite3.connect(db_path)
 c = con.cursor()
 
@@ -85,7 +84,7 @@ c.execute(command)
 c.execute("SELECT Point_X, Point_Y FROM DRAWPOINTS")
 Draw_table = c.fetchall()
 
-customtkinter.set_default_color_theme("green")
+customtkinter.set_default_color_theme("dark-blue")
 
 class App(customtkinter.CTk):
     APP_NAME = "ByahePH"
@@ -132,8 +131,8 @@ class App(customtkinter.CTk):
         # Sidebar frame
         self.frame_left.grid_rowconfigure(1, weight=0)
 
-        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Clear Markers", command=self.clear_marker_event)
-        self.button_2.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
+        self.button_7 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
+        self.button_7.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", command=self.show_jeep)
         self.button_3.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
@@ -171,13 +170,15 @@ class App(customtkinter.CTk):
                                                 command=self.search_event)
         self.button_5.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
 
-        self.map_widget.canvas.unbind("<Button-3>")
+        self.button_6 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
+        self.button_6.grid(row=0, column=2, sticky="we", padx=(12, 0), pady=12)
+
         self.bind('<space>', self.toggle_coords)
 
         # Set default values
         self.map_widget.set_address("Batangas City")
         self.map_widget.set_zoom(11)
-        self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Dark", "System"], command=self.change_appearance_mode)
+        self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Light", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
 
@@ -187,6 +188,12 @@ class App(customtkinter.CTk):
         self.drawed_coordinates = []
         for items in Draw_table:
             self.add_to_coords(x=items[0],y=items[1])
+
+    def show_suggest(self):
+        pass
+
+    def show_login(self):
+        pass
 
     def toggle_coords(self, event=None):
         if self.map_widget.canvas.cget('cursor') == "arrow":
@@ -243,15 +250,6 @@ class App(customtkinter.CTk):
                 
     def search_event(self, event=None):
         self.map_widget.set_address(self.entry.get())
-
-    def add_marker_event(self, coords):
-        print("Add marker:", coords)
-        new_marker = self.map_widget.set_marker(coords[0], coords[1], text="new marker")
-        self.marker_list.append(new_marker)
-
-    def clear_marker_event(self):
-        for marker in self.marker_list:
-            marker.delete()
 
     def change_appearance_mode(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
