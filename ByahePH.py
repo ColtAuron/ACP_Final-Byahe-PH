@@ -204,7 +204,7 @@ class App(customtkinter.CTk):
         if self.suggestion_active == 0:
             self.bind('<space>', self.toggle_coords)
             self.suggestion_active = 1 #Suggestion is active
-            self.button_7._fg_color = 'blue'
+            self.button_1._fg_color = 'blue'
 
         else:
             self.unbind('<space>')
@@ -214,7 +214,7 @@ class App(customtkinter.CTk):
             self.map_widget.canvas.bind("<B1-Motion>", self.map_widget.mouse_move)
             self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
             self.suggestion_active = 0 #Suggestion is inactive
-            self.button_7._fg_color = list(('#3a7ebf','#1f538d'))
+            self.button_1._fg_color = list(('#3a7ebf','#1f538d'))
             if self.marker_coords:
                 self.marker_coords.delete()
             self.drawed_coordinates.clear()
