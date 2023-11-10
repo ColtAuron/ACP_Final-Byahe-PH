@@ -110,8 +110,10 @@ class App(customtkinter.CTk):
         self.tmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Tric.png")).resize((100,150)))
         self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Bus.png")).resize((100,150)))
        
-        self.tric_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Tric.png")))
-
+        self.jeep_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "jeep.png")).resize((50,50)))    
+        self.tric_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "tricycle.png")).resize((50,50)))
+        self.bus_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "buss.png")).resize((50,50)))
+        
         # ============ create two CTkFrames ============
 
         self.grid_columnconfigure(0, weight=0)
@@ -141,13 +143,13 @@ class App(customtkinter.CTk):
         self.button_1 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
         self.button_1.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
 
-        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", command=self.show_jeep)
+        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", image=self.jeep_button, command=self.show_jeep)
         self.button_2.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
 
-        self.button_3 = customtkinter.CTkButton(master=self.frame_left,text="Tricycle", image=self.tric_button , command=self.show_tricycle) 
+        self.button_3 = customtkinter.CTkButton(master=self.frame_left,text="Tricycle", image=self.tric_button, command=self.show_tricycle) 
         self.button_3.grid(pady=(10, 10), padx=(20, 20), row=3, column=0)
 
-        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", command=self.show_bus)
+        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", image=self.bus_button, command=self.show_bus)
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
         self.textbox = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
@@ -169,7 +171,7 @@ class App(customtkinter.CTk):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         database_path = os.path.join(script_directory, "batangas.db")
     
-        self.map_widget = TkinterMapView(self.frame_right, database_path=database_path, use_database_only=True)
+        self.map_widget = TkinterMapView(self.frame_right, database_path=database_path, use_database_only=False)
         self.map_widget.grid(row=1, rowspan=1, column=0, columnspan=3, sticky="nswe", padx=(0, 0), pady=(0, 0))
         self.map_widget.configure(height=600, width=900)  # Set the map size
         self.map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
