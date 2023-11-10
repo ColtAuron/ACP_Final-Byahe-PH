@@ -158,7 +158,7 @@ class App(customtkinter.CTk):
 
         self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130)
        
-        self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_suggest)
+        self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_submit)
         
 
         # Main frame
@@ -188,10 +188,6 @@ class App(customtkinter.CTk):
         self.button_7 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
         self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
 
-        
-
-        
-
         # Set default values
         #self.map_widget.set_address("Batangas City")
         self.map_widget.set_position(deg_x=13.7582328,deg_y=121.0726133)
@@ -202,8 +198,6 @@ class App(customtkinter.CTk):
         
 
         #variables for draw
-
-
         self.suggestion_active = 0
         self.temp_points = None
         self.start_points = None
