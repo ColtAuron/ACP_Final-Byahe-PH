@@ -118,6 +118,10 @@ class App(customtkinter.CTk):
         self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'jeep.png')), size=(50,50))    
         self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'tricycle.png')), size=(50,50)) 
         self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'buss.png')), size=(50,50)) 
+
+        self.jeep_active =0
+        self.tric_active =0
+        self.bus_active =0
         
         # ============ create two CTkFrames ============
 
@@ -157,7 +161,9 @@ class App(customtkinter.CTk):
         self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", image=self.bus_button, command=self.show_bus)
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
-        self.textbox = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        self.textbox1 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        
+        self.textbox2 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
 
         self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130)
 
@@ -214,10 +220,10 @@ class App(customtkinter.CTk):
         if self.suggestion_active == 0:
             self.bind('<space>', self.toggle_coords)
             self.suggestion_active = 1 #Suggestion is active
-            self.button_1._fg_color = 'blue' #KINGNAMO
-            self.textbox.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
-            self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
-            self.textbox.configure(state="disabled")
+            self.button_1._fg_color = 'blue' #pag pinindot #14304a
+            self.textbox1.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
+            self.textbox1.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
+            self.textbox1.configure(state="disabled")
             self.entry_1.grid(row=6, column=0, sticky="we", padx=(12, 12), pady=12)
             self.entry_2.grid(row=7, column=0, sticky="we", padx=(12, 12), pady=12)
             self.button_5.grid(pady=(10, 10), padx=(20, 20), row=8, column=0)
@@ -229,7 +235,7 @@ class App(customtkinter.CTk):
             self.map_widget.canvas.bind("<B1-Motion>", self.map_widget.mouse_move)
             self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
             self.suggestion_active = 0 #Suggestion is inactive
-            self.button_1._fg_color = list(('#3a7ebf','#1f538d')) #KINGNAMO
+            self.button_1._fg_color = list(('#3a7ebf','#1f538d')) #pag di pinindot
             if self.marker_coords:
                 self.marker_coords.delete()
             self.drawed_coordinates.clear()
@@ -239,8 +245,8 @@ class App(customtkinter.CTk):
             self.temp_points = None
             c.execute("DELETE FROM DRAWPOINTS")
             con.commit()
-            self.textbox.pack_forget()
-            self.textbox.grid_forget()
+            self.textbox1.pack_forget()
+            self.textbox1.grid_forget()
             self.entry_1.pack_forget()
             self.entry_1.grid_forget()
             self.entry_2.pack_forget()
@@ -325,6 +331,11 @@ class App(customtkinter.CTk):
         current_zoom = self.map_widget.get_zoom()
         self.map_widget.set_zoom(current_zoom - 1)
 
+        #var for highlighting buttons
+        self.jeep_active = 0
+        self.tric_active = 0
+        self.bus_active = 0
+
     def show_jeep(self):
         if path_routes:
             for jeepneys in path_routes:
@@ -334,7 +345,20 @@ class App(customtkinter.CTk):
             for jeepneys in Route.all:
                 if jeepneys.disabled == False:
                     path_routes.append(self.map_widget.set_path(jeepneys.points, color = jeepneys.color, width = 3))
-        pass
+    
+        if self.jeep_active == 1:
+            self.jeep_active = 0  # button is active
+            self.button_2._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
+            
+            self.textbox2.pack_forget()
+            self.textbox2.grid_forget()
+        else:
+            self.jeep_active = 1  # button is inactive
+            self.button_2._fg_color = 'blue'  # pag pinindot
+            self.textbox2.grid(row=9, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
+            self.textbox2.insert("0.0", "Blue =\nYellow =\nGreen =\nGray =")
+            self.textbox2.configure(state="disabled")
+    pass
 
     def show_tricycle(self):
         if toda_station:
@@ -345,7 +369,14 @@ class App(customtkinter.CTk):
             for toda in Toda.all:
                 if toda.disabled == False:
                     toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image, text_color = "#8B0000"))
-        pass
+
+        if self.tric_active == 1:
+            self.tric_active = 0  # button is active
+            self.button_3._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
+        else:
+            self.tric_active = 1  # button is inactive
+            self.button_3._fg_color = 'blue'  # pag pinindot
+    pass
 
     def show_bus(self):
         if bus_terminal:
@@ -356,7 +387,13 @@ class App(customtkinter.CTk):
             for termi in Terminal.all:
                 if termi.disabled == False:
                     bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB", icon=self.bmarker_image))
-        pass
+        if self.bus_active == 1:
+            self.bus_active = 0  # button is active
+            self.button_4._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
+        else:
+            self.bus_active = 1  # button is inactive
+            self.button_4._fg_color = 'blue'  # pag pinindot
+    pass
 
     def on_closing(self, event=0):
         self.destroy()
