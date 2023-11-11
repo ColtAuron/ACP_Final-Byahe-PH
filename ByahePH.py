@@ -220,7 +220,7 @@ class App(customtkinter.CTk):
         if self.suggestion_active == 0:
             self.bind('<space>', self.toggle_coords)
             self.suggestion_active = 1 #Suggestion is active
-            self.button_1._fg_color = 'blue' #pag pinindot #14304a
+            self.button_1._fg_color = '#14375E' #pag pinindot #14304a
             self.textbox1.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
             self.textbox1.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
             self.textbox1.configure(state="disabled")
@@ -354,7 +354,7 @@ class App(customtkinter.CTk):
             self.textbox2.grid_forget()
         else:
             self.jeep_active = 1  # button is inactive
-            self.button_2._fg_color = 'blue'  # pag pinindot
+            self.button_2._fg_color = '#14375E'  # pag pinindot
             self.textbox2.grid(row=9, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
             self.textbox2.insert("0.0", "Blue =\nYellow =\nGreen =\nGray =")
             self.textbox2.configure(state="disabled")
@@ -368,14 +368,14 @@ class App(customtkinter.CTk):
         else:
             for toda in Toda.all:
                 if toda.disabled == False:
-                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image, text_color = "#8B0000"))
+                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image, text_color = "#5e1414", font = ['Basic', '13']))
 
         if self.tric_active == 1:
             self.tric_active = 0  # button is active
             self.button_3._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
         else:
             self.tric_active = 1  # button is inactive
-            self.button_3._fg_color = 'blue'  # pag pinindot
+            self.button_3._fg_color = '#14375E'  # pag pinindot
     pass
 
     def show_bus(self):
@@ -386,13 +386,13 @@ class App(customtkinter.CTk):
         else:
             for termi in Terminal.all:
                 if termi.disabled == False:
-                    bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB", icon=self.bmarker_image))
+                    bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#14375E", font = ['Basic', '15'], marker_color_circle = "#87CEEB", icon=self.bmarker_image))
         if self.bus_active == 1:
             self.bus_active = 0  # button is active
             self.button_4._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
         else:
             self.bus_active = 1  # button is inactive
-            self.button_4._fg_color = 'blue'  # pag pinindot
+            self.button_4._fg_color = '#14375E'  # pag pinindot
     pass
 
     def on_closing(self, event=0):
