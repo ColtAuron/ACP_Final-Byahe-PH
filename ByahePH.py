@@ -3,6 +3,8 @@ from tkintermapview import TkinterMapView
 import os
 import sqlite3
 from PIL import Image, ImageTk
+import ctypes
+ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 class Route:
     all = []
@@ -96,7 +98,11 @@ class App(customtkinter.CTk):
         super().__init__(*args, **kwargs)
 
         self.title(App.APP_NAME)
-        self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
+        self.screen_width = self.winfo_screenwidth()
+        self.screen_height = self.winfo_screenheight()
+        self.CenterX = int((self.screen_width-App.WIDTH-375)/2)
+        self.CenterY = int((self.screen_height-App.HEIGHT-250)/2)
+        self.geometry(f"{App.WIDTH}x{App.HEIGHT}+{self.CenterX}+{self.CenterY}")
         self.minsize(App.WIDTH, App.HEIGHT)
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -105,14 +111,13 @@ class App(customtkinter.CTk):
         self.createcommand('tk::mac::Quit', self.on_closing)
 
         self.marker_list = []
-
-        current_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-        self.tmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Tric.png")).resize((100,150)))
-        self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Bus.png")).resize((100,150)))
+        
+        self.tmarker_image = ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'Tric.png')).resize((100, 150)))
+        self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'Bus.png')).resize((100, 150)))
        
-        self.jeep_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "jeep.png")).resize((50,50)))    
-        self.tric_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "tricycle.png")).resize((50,50)))
-        self.bus_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "buss.png")).resize((50,50)))
+        self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'jeep.png')), size=(50,50))    
+        self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'tricycle.png')), size=(50,50)) 
+        self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'buss.png')), size=(50,50)) 
         
         # ============ create two CTkFrames ============
 
@@ -196,7 +201,6 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
         
-
         #variables for draw
         self.suggestion_active = 0
         self.temp_points = None
@@ -210,7 +214,7 @@ class App(customtkinter.CTk):
         if self.suggestion_active == 0:
             self.bind('<space>', self.toggle_coords)
             self.suggestion_active = 1 #Suggestion is active
-            self.button_1._fg_color = 'blue'
+            self.button_1._fg_color = 'blue' #KINGNAMO
             self.textbox.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
             self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
             self.textbox.configure(state="disabled")
@@ -225,7 +229,7 @@ class App(customtkinter.CTk):
             self.map_widget.canvas.bind("<B1-Motion>", self.map_widget.mouse_move)
             self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
             self.suggestion_active = 0 #Suggestion is inactive
-            self.button_1._fg_color = list(('#3a7ebf','#1f538d'))
+            self.button_1._fg_color = list(('#3a7ebf','#1f538d')) #KINGNAMO
             if self.marker_coords:
                 self.marker_coords.delete()
             self.drawed_coordinates.clear()
@@ -340,7 +344,7 @@ class App(customtkinter.CTk):
         else:
             for toda in Toda.all:
                 if toda.disabled == False:
-                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image))
+                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image, text_color = "#8B0000"))
         pass
 
     def show_bus(self):
