@@ -5,12 +5,24 @@ from PIL import ImageTk,Image
 import os
 import ctypes
 import sqlite3
+import re
+import time
+from cryptography.fernet import Fernet
+
 ctypes.windll.shcore.SetProcessDpiAwareness(2) # windows version should >= 8.1
+
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+encoding = "utf-8"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "bphData.db")
 con = sqlite3.connect(db_path)
 c = con.cursor()
+
+c.execute("SELECT * FROM KEY")
+key_table = c.fetchall()
+key = key_table[0][0]
+cipher_suit = Fernet(bytes(key, encoding))
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -71,6 +83,8 @@ class App(customtkinter.CTk):
         self.option_1=customtkinter.CTkButton(self.frame1,font=self.font3, text='About ByahePH', fg_color="transparent", hover_color="#808080", command=self.show_about)
         self.option_1.place(relx=0.5, rely=0.93, anchor=tkinter.CENTER)
 
+        self.frame1.place_forget()
+
         # FRAME 2 --------------------
 
         self.frame2=customtkinter.CTkFrame(master=self.bg, width=356, height=600, corner_radius=18)
@@ -103,9 +117,10 @@ class App(customtkinter.CTk):
         self.register_send= customtkinter.CTkButton(self.frame2, cursor='hand2', width=50, height=50, image=self.submit_img, text="", corner_radius=10, command=self.register)
         self.register_send.place(relx=0.5, rely=0.75, anchor=tkinter.CENTER)
 
+        self.error=customtkinter.CTkLabel(self.frame2,font=self.font3,text='',text_color='#fff', height=10, bg_color="transparent")
+        self.error.place(relx=0.5, rely=0.63, anchor=tkinter.CENTER)
 
-
-        self.frame2.place_forget()
+        self.frame2.place()
 
         # FRAME 3 --------------------
 
@@ -123,35 +138,50 @@ class App(customtkinter.CTk):
 
         self.frame3.place_forget()
 
+        
+
     def register(self):
+        self.error.configure(text='')
         if self.email_entry.get() and self.user_entry.get() and self.pass_entry.get() and self.conf_entry.get():
-            if self.pass_entry.get() == self.conf_entry.get():
-                email = self.email_entry.get()
-                username = self.user_entry.get()
-                password = self.pass_entry.get()
-                admin = 0
-                to_database = tuple((email, username, password, admin))
-                c.execute("SELECT Email FROM ACCOUNT")
-                email_table = c.fetchall()
-                c.execute("SELECT User FROM ACCOUNT")
-                username_table = c.fetchall()
-                if not email_table:
-                    if not username_table:
-                        c.execute("INSERT INTO ACCOUNT (Email, User, Password, Admin) VALUES (?,?,?,?)", to_database)
-                        con.commit()
-                        self.show_back()
+            email = self.email_entry.get()
+            username = self.user_entry.get()
+            password = self.pass_entry.get()
+            admin = 0
+            if (re.fullmatch(regex, email)):
+                if self.pass_entry.get() == self.conf_entry.get():
+                    c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (email,))
+                    email_table = c.fetchall()
+                    c.execute("SELECT User FROM ACCOUNT WHERE User=?", (username,))
+                    username_table = c.fetchall()
+                    if email_table == []:
+                        if username_table == []:
+                            encoded_pass = cipher_suit.encrypt(bytes(password, encoding))
+                            to_database = tuple((email, username, encoded_pass, admin))
+                            self.email_entry.delete(0, len(email))
+                            self.user_entry.delete(0, len(username))
+                            self.pass_entry.delete(0, len(password))
+                            self.conf_entry.delete(0, len(password))
+                            c.execute("INSERT INTO ACCOUNT (Email, User, Password, Admin) VALUES (?,?,?,?)", to_database)
+                            con.commit()
+                            print("Commited to database")
+                            time.sleep(0.3)
+                            self.show_back()
+                        else:
+                            self.error.configure(text="Username already taken.")
                     else:
-                        print("Username already taken")
+                        self.error.configure(text="Email already taken.")
                 else:
-                    print("Email already taken.")                
+                    self.error.configure(text="Passwords do not match.")
             else:
-                print("Passwords Do not match")
+                self.error.configure(text="Email is not valid.")
         else:
-            print("Fill up missing blanks")
+            self.error.configure(text="Please fill up missing blanks.")
+
 
     def show_create(self):
         self.frame1.place_forget()
         self.frame2.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.error.configure(text='')
         pass
 
     def show_about(self):

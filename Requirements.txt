@@ -1,0 +1,4 @@
+tkintermapview
+customtkinter
+packaging
+cryptography

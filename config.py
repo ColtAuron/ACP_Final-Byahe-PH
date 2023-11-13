@@ -1,5 +1,18 @@
 import sqlite3
 import os
+from cryptography.fernet import Fernet
+
+encoding = "utf-8"
+
+# key = b'ZYj4nBF8PylNxTkwv0Py483soXeKz9iIwQdtETXJUro='
+# cipher_suit = Fernet(key)
+# message = "Hello"
+# encoded_text = cipher_suit.encrypt(bytes(message, encoding))
+# # print(len(encoded_text))
+# decrypt_text = cipher_suit.decrypt(encoded_text)
+# # print(decrypt_text.decode())
+# print("ZYj4nBF8PylNxTkwv0Py483soXeKz9iIwQdtETXJUro=")
+# print(encoded_text)
 
 class Route:
     all = []
@@ -823,18 +836,42 @@ command = ('''CREATE TABLE IF NOT EXISTS ACCOUNT(
             ID INTEGER PRIMARY KEY,
             Email Varchar(30),
             User Varchar(20),
-            Password Varchar(20),
+            Password Varchar(103),
             Admin TINYINT(1)
+           )''')
+
+# command = ('''CREATE TABLE IF NOT EXISTS KEY(
+#             KEY Varchar(44)
+#            )''')
+
+c.execute(command)
+
+# # c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (email,))
+# # email_table = c.fetchall()
+# c.execute("DROP TABLE ACCOUNT")
+# con.commit()
+
+# c.execute("INSERT INTO KEY VALUES ('ZYj4nBF8PylNxTkwv0Py483soXeKz9iIwQdtETXJUro=')")
+# con.commit()
+
+command = ('''CREATE TABLE IF NOT EXISTS KEEPSIGNED(
+            ID INTEGER PRIMARY KEY,
+            UserID INTEGER,
+            Password Varchar(103),
+            Keep TINYINT(1)
            )''')
 
 c.execute(command)
 
-c.execute("DELETE FROM ACCOUNT")
-
-account_table = c.fetchall()
-print(account_table)
+c.execute("SELECT * FROM KEEPSIGNED")
+key_table = c.fetchall()
+print(key_table)
 
 con.close()
+
+
+
+
 
 
 
