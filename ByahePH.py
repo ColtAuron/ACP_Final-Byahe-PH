@@ -4,6 +4,8 @@ import os
 import sqlite3
 from PIL import Image, ImageTk
 import ctypes
+import Login
+import time
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 class Route:
@@ -211,6 +213,7 @@ class App(customtkinter.CTk):
         self.marker_coords = None
         for items in Draw_table:
             self.add_to_coords(x=items[0],y=items[1])
+        self.toplevel_window = None
         
     def show_suggest(self):
         if self.suggestion_active == 0:
@@ -255,6 +258,13 @@ class App(customtkinter.CTk):
         pass
 
     def show_login(self):
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = Login.App(self)
+            self.toplevel_window.after(100, self.toplevel_window.lift)
+            self.toplevel_window.wait_window()
+        else:
+            self.toplevel_window.focus()
+        print("Done")
         pass
 
     def show_submit(self):

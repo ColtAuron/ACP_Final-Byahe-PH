@@ -846,24 +846,22 @@ command = ('''CREATE TABLE IF NOT EXISTS ACCOUNT(
 
 c.execute(command)
 
-# # c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (email,))
-# # email_table = c.fetchall()
-# c.execute("DROP TABLE ACCOUNT")
-# con.commit()
+# # # c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (email,))
+# # # # email_table = c.fetchall()
 
-# c.execute("INSERT INTO KEY VALUES ('ZYj4nBF8PylNxTkwv0Py483soXeKz9iIwQdtETXJUro=')")
-# con.commit()
+# # c.execute("INSERT INTO KEY VALUES ('ZYj4nBF8PylNxTkwv0Py483soXeKz9iIwQdtETXJUro=')")
+# # con.commit()
 
-command = ('''CREATE TABLE IF NOT EXISTS KEEPSIGNED(
-            ID INTEGER PRIMARY KEY,
-            UserID INTEGER,
-            Password Varchar(103),
-            Keep TINYINT(1)
-           )''')
+# command = ('''CREATE TABLE IF NOT EXISTS KEEPSIGNED(
+#             ID INTEGER PRIMARY KEY,
+#             UserID INTEGER,
+#             Password Varchar(103),
+#             Keep TINYINT(1)
+#            )''')
 
-c.execute(command)
+# c.execute(command)
 
-c.execute("SELECT * FROM KEEPSIGNED")
+c.execute("Select * FROM ACCOUNT")
 key_table = c.fetchall()
 print(key_table)
 

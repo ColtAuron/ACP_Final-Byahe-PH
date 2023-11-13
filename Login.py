@@ -11,22 +11,21 @@ from cryptography.fernet import Fernet
 
 ctypes.windll.shcore.SetProcessDpiAwareness(2) # windows version should >= 8.1
 
-regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-encoding = "utf-8"
+class App(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        self.encoding = "utf-8"
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "bphData.db")
-con = sqlite3.connect(db_path)
-c = con.cursor()
+        self.BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        self.db_path = os.path.join(self.BASE_DIR, "bphData.db")
+        self.con = sqlite3.connect(self.db_path)
+        self.c = self.con.cursor()
 
-c.execute("SELECT * FROM KEY")
-key_table = c.fetchall()
-key = key_table[0][0]
-cipher_suit = Fernet(bytes(key, encoding))
-
-class App(customtkinter.CTk):
-    def __init__(self):
-        super().__init__()
+        self.c.execute("SELECT * FROM KEY")
+        key_table = self.c.fetchall()
+        key = key_table[0][0]
+        self.cipher_suit = Fernet(bytes(key, self.encoding))
         self.app_Width = 500
         self.app_Height = 650
         self.screen_width = self.winfo_screenwidth()
@@ -66,16 +65,19 @@ class App(customtkinter.CTk):
         self.logo.place(relx=0.5, rely=0.13, anchor=tkinter.CENTER)
 
         self.loginsignup_label=customtkinter.CTkLabel(self.frame1,font=self.font1,text='Sign in',text_color='#fff')
-        self.loginsignup_label.place(relx=0.5, rely=0.29, anchor=tkinter.CENTER)
+        self.loginsignup_label.place(relx=0.5, rely=0.28, anchor=tkinter.CENTER)
 
-        self.users_entry=customtkinter.CTkEntry(self.frame1,text_color='#18191A', fg_color='#d3d3d3', bg_color='#03045E', border_color='#D3D3D3',border_width=3, placeholder_text="Username",placeholder_text_color='#18191A',width=230,height=30)
-        self.users_entry.place(relx=0.5, rely=0.40, anchor=tkinter.CENTER)
+        self.loginuser_entry=customtkinter.CTkEntry(self.frame1,text_color='#18191A', fg_color='#d3d3d3', bg_color='#03045E', border_color='#D3D3D3',border_width=3, placeholder_text="Username",placeholder_text_color='#18191A',width=230,height=30)
+        self.loginuser_entry.place(relx=0.5, rely=0.41, anchor=tkinter.CENTER)
 
-        self.pass_entry=customtkinter.CTkEntry(self.frame1,show='*',text_color='#18191A', fg_color='#d3d3d3', bg_color='#03045E', border_color='#D3D3D3',border_width=3, placeholder_text="Password",placeholder_text_color='#18191A',width=230,height=30)
-        self.pass_entry.place(relx=0.5, rely=0.48, anchor=tkinter.CENTER)
+        self.loginpass_entry=customtkinter.CTkEntry(self.frame1,show='*',text_color='#18191A', fg_color='#d3d3d3', bg_color='#03045E', border_color='#D3D3D3',border_width=3, placeholder_text="Password",placeholder_text_color='#18191A',width=230,height=30)
+        self.loginpass_entry.place(relx=0.5, rely=0.49, anchor=tkinter.CENTER)
 
-        self.login_button= customtkinter.CTkButton(self.frame1, font=self.font4,text_color='#d3d3d3',cursor='hand2', width=50, height=50, image=self.submit_img, text="", corner_radius=10)
-        self.login_button.place(relx=0.5, rely=0.65, anchor=tkinter.CENTER)
+        self.keepsigned = customtkinter.CTkCheckBox(self.frame1, text='Keep me signed in', text_color='#fff',)
+        self.keepsigned.place(relx=0.37, rely=0.56, anchor=tkinter.CENTER)
+
+        self.login_button= customtkinter.CTkButton(self.frame1, font=self.font4,text_color='#d3d3d3',cursor='hand2', width=50, height=50, image=self.submit_img, text="", corner_radius=10, command=self.login)
+        self.login_button.place(relx=0.5, rely=0.72, anchor=tkinter.CENTER)
 
         self.signup_button = customtkinter.CTkButton(self.frame1, font=self.font3, text="Create an Account", border_width=0, fg_color="transparent", hover_color="#808080", command=self.show_create)
         self.signup_button.place(relx=0.5, rely=0.86, anchor=tkinter.CENTER)
@@ -83,7 +85,10 @@ class App(customtkinter.CTk):
         self.option_1=customtkinter.CTkButton(self.frame1,font=self.font3, text='About ByahePH', fg_color="transparent", hover_color="#808080", command=self.show_about)
         self.option_1.place(relx=0.5, rely=0.93, anchor=tkinter.CENTER)
 
-        self.frame1.place_forget()
+        self.loginerror=customtkinter.CTkLabel(self.frame1,font=self.font3,text='',text_color='#f00', height=10, bg_color="transparent")
+        self.loginerror.place(relx=0.5, rely=0.36, anchor=tkinter.CENTER)
+
+        self.frame1.place()
 
         # FRAME 2 --------------------
 
@@ -120,7 +125,7 @@ class App(customtkinter.CTk):
         self.error=customtkinter.CTkLabel(self.frame2,font=self.font3,text='',text_color='#fff', height=10, bg_color="transparent")
         self.error.place(relx=0.5, rely=0.63, anchor=tkinter.CENTER)
 
-        self.frame2.place()
+        self.frame2.place_forget()
 
         # FRAME 3 --------------------
 
@@ -138,7 +143,25 @@ class App(customtkinter.CTk):
 
         self.frame3.place_forget()
 
-        
+    def login(self):
+        if self.loginuser_entry.get() and self.loginpass_entry.get():
+            Login_name = self.loginuser_entry.get()
+            Login_pass = self.loginpass_entry.get()
+            self.c.execute("SELECT * FROM ACCOUNT WHERE USER = ?", (Login_name,))
+            login_query = self.c.fetchall()
+            if login_query[0][2] == Login_name and self.cipher_suit.decrypt(login_query[0][3]) == bytes(Login_pass, self.encoding):
+                print("LOGIN SUCCESS!")
+                to_database = tuple((login_query[0][0], login_query[0][3], self.keepsigned.get()))
+                print(to_database)
+                # c.execute("INSERT INTO KEEPSIGNED (UserID, Password, Keep) VALUES (?,?,?,?)", to_database)
+                # con.commit()
+                self.con.close()
+                self.destroy()
+            else:
+                self.loginerror.configure(text="Wrong username or password")
+        else:
+            self.loginerror.configure(text="Please fill up missing blanks.")
+        pass
 
     def register(self):
         self.error.configure(text='')
@@ -147,22 +170,22 @@ class App(customtkinter.CTk):
             username = self.user_entry.get()
             password = self.pass_entry.get()
             admin = 0
-            if (re.fullmatch(regex, email)):
+            if (re.fullmatch(self.regex, email)):
                 if self.pass_entry.get() == self.conf_entry.get():
-                    c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (email,))
-                    email_table = c.fetchall()
-                    c.execute("SELECT User FROM ACCOUNT WHERE User=?", (username,))
-                    username_table = c.fetchall()
+                    self.c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (email,))
+                    email_table = self.c.fetchall()
+                    self.c.execute("SELECT User FROM ACCOUNT WHERE User=?", (username,))
+                    username_table = self.c.fetchall()
                     if email_table == []:
                         if username_table == []:
-                            encoded_pass = cipher_suit.encrypt(bytes(password, encoding))
+                            encoded_pass = self.cipher_suit.encrypt(bytes(password, self.encoding))
                             to_database = tuple((email, username, encoded_pass, admin))
                             self.email_entry.delete(0, len(email))
                             self.user_entry.delete(0, len(username))
                             self.pass_entry.delete(0, len(password))
                             self.conf_entry.delete(0, len(password))
-                            c.execute("INSERT INTO ACCOUNT (Email, User, Password, Admin) VALUES (?,?,?,?)", to_database)
-                            con.commit()
+                            self.c.execute("INSERT INTO ACCOUNT (Email, User, Password, Admin) VALUES (?,?,?,?)", to_database)
+                            self.con.commit()
                             print("Commited to database")
                             time.sleep(0.3)
                             self.show_back()
@@ -195,6 +218,5 @@ class App(customtkinter.CTk):
         self.frame1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
         pass
 
-app = App()
-app.mainloop()
-con.close()
+    def start(self):
+        App().mainloop()
