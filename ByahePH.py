@@ -1,4 +1,5 @@
 import customtkinter
+import tkinter
 from tkintermapview import TkinterMapView
 import os
 import sqlite3
@@ -120,6 +121,7 @@ class App(customtkinter.CTk):
         self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'jeep.png')), size=(50,50))    
         self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'tricycle.png')), size=(50,50)) 
         self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'buss.png')), size=(50,50)) 
+        self.profile_pic=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'profile-icon.png')), size=(30,30)) 
         
         # ============ create two CTkFrames ============
 
@@ -160,16 +162,11 @@ class App(customtkinter.CTk):
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
         self.textbox1 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
-        
         self.textbox2 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
-
         self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130)
-
         self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130)
-       
         self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_submit)
         
-
         # Main frame
         self.frame_right.grid_rowconfigure(1, weight=1)
         self.frame_right.grid_rowconfigure(0, weight=0)
@@ -185,8 +182,7 @@ class App(customtkinter.CTk):
         self.map_widget.configure(height=600, width=900)  # Set the map size
         self.map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
 
-        
-
+        #Right Frame
         self.entry_3 = customtkinter.CTkEntry(master=self.frame_right, placeholder_text="Type Address")
         self.entry_3.grid(row=0, column=0, sticky="we", padx=(12, 0), pady=12)
         self.entry_3.bind("<Return>", self.search_event)
@@ -195,7 +191,25 @@ class App(customtkinter.CTk):
         self.button_6.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
 
         self.button_7 = customtkinter.CTkButton(master=self.frame_right, text="Log-in", command=self.show_login)
-        self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
+        
+        self.user_button = customtkinter.CTkButton(master=self.frame_right, text="", image=self.profile_pic, bg_color='transparent', fg_color='transparent', command=self.press_user)
+        self.user_button.place(relx=0.93, rely=0.037, anchor=tkinter.CENTER)
+        self.user_button.place_forget()
+
+        self.signout=customtkinter.CTkLabel(self.frame_right,font=('Arial',12),text='Signout?',text_color='#fff')
+        self.signoutyes = customtkinter.CTkButton(master=self.frame_right, text="Yes", width=50, command=self.yes_button)       
+        self.signoutno = customtkinter.CTkButton(master=self.frame_right, text="No", width=50, command=self.no_button)
+        
+
+        c.execute("SELECT * FROM KEEPSIGNED")
+        keep = c.fetchall()
+        if keep:
+            if keep[0][3]:
+                self.refresh_login()
+            else:
+                self.log_out()
+        else:
+            self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
 
         # Set default values
         #self.map_widget.set_address("Batangas City")
@@ -214,7 +228,27 @@ class App(customtkinter.CTk):
         for items in Draw_table:
             self.add_to_coords(x=items[0],y=items[1])
         self.toplevel_window = None
-        
+    
+    def no_button(self):
+        self.user_button.place(relx=0.93, rely=0.037, anchor=tkinter.CENTER)
+        self.signout.place_forget()
+        self.signoutyes.place_forget()
+        self.signoutno.place_forget()
+        pass
+
+    def yes_button(self):
+        self.log_out()
+        self.signout.place_forget()
+        self.signoutyes.place_forget()
+        self.signoutno.place_forget()
+        pass
+
+    def press_user(self):
+        self.user_button.place_forget()
+        self.signout.place(relx=0.86, rely=0.037, anchor=tkinter.CENTER)
+        self.signoutyes.place(relx=0.91, rely=0.037, anchor=tkinter.CENTER)
+        self.signoutno.place(relx=0.96, rely=0.037, anchor=tkinter.CENTER)
+
     def show_suggest(self):
         if self.suggestion_active == 0:
             self.bind('<space>', self.toggle_coords)
@@ -254,7 +288,28 @@ class App(customtkinter.CTk):
             self.button_5.grid_forget()
         pass
 
-    def show_image(self):
+    def log_out(self):
+        c.execute("DELETE FROM KEEPSIGNED")
+        con.commit()
+        self.user_button.place_forget()
+        self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
+        pass
+
+    def refresh_login(self):
+        c.execute("SELECT * FROM KEEPSIGNED")
+        self.keep_table = c.fetchall()
+        if self.keep_table:
+            c.execute("SELECT * FROM ACCOUNT WHERE ID=?", (self.keep_table[0][0],))
+            user_table = c.fetchall()
+            if self.keep_table[0][2] == user_table[0][3]:
+                self.button_7.pack_forget()
+                self.button_7.grid_forget()
+                self.user_button.place(relx=0.93, rely=0.037, anchor=tkinter.CENTER)
+                self.user_button.configure(text=user_table[0][2])
+            else:
+                self.log_out()
+        else:
+            self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
         pass
 
     def show_login(self):
@@ -264,7 +319,7 @@ class App(customtkinter.CTk):
             self.toplevel_window.wait_window()
         else:
             self.toplevel_window.focus()
-        print("Done")
+        self.refresh_login()
         pass
 
     def show_submit(self):

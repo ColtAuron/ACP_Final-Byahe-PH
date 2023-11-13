@@ -860,10 +860,27 @@ c.execute(command)
 #            )''')
 
 # c.execute(command)
+# c.execute("DELETE FROM KEEPSIGNED")
+# con.commit()
+# keep_table = c.fetchall()
+# print(keep_table)
 
-c.execute("Select * FROM ACCOUNT")
-key_table = c.fetchall()
-print(key_table)
+# c.execute("SELECT * FROM ACCOUNT WHERE ID=?", (keep_table[0][0],))
+# key_table = c.fetchall()
+# print(key_table)
+
+# keep_table = 1 
+# c.execute("SELECT * FROM ACCOUNT WHERE ID=?", (keep_table,))
+# user_table = c.fetchall()
+# print(user_table)
+
+c.execute("DELETE FROM KEEPSIGNED")
+out = c.fetchall()
+print(out)
+
+
+
+
 
 con.close()
 
