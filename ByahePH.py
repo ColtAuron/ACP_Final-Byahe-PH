@@ -112,16 +112,12 @@ class App(customtkinter.CTk):
 
         self.marker_list = []
         
-        self.tmarker_image = ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'Tric.png')).resize((100, 150)))
-        self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'Bus.png')).resize((100, 150)))
+        self.tmarker_image = ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'images', 'Tric.png')).resize((100, 150)))
+        self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'images', 'Bus.png')).resize((100, 150)))
        
-        self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'jeep.png')), size=(50,50))    
-        self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'tricycle.png')), size=(50,50)) 
-        self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'buss.png')), size=(50,50)) 
-
-        self.jeep_active =0
-        self.tric_active =0
-        self.bus_active =0
+        self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'jeep.png')), size=(50,50))    
+        self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'tricycle.png')), size=(50,50)) 
+        self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'buss.png')), size=(50,50)) 
         
         # ============ create two CTkFrames ============
 
@@ -331,68 +327,48 @@ class App(customtkinter.CTk):
         current_zoom = self.map_widget.get_zoom()
         self.map_widget.set_zoom(current_zoom - 1)
 
-        #var for highlighting buttons
-        self.jeep_active = 0
-        self.tric_active = 0
-        self.bus_active = 0
-
     def show_jeep(self):
         if path_routes:
+            self.button_2._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
+            self.textbox2.pack_forget()
+            self.textbox2.grid_forget()
             for jeepneys in path_routes:
                 self.map_widget.delete(jeepneys)
             path_routes.clear()
         else:
-            for jeepneys in Route.all:
+            self.button_2._fg_color = '#14375E' 
+            self.textbox2.grid(row=9, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
+            for count, jeepneys in enumerate(Route.all):
                 if jeepneys.disabled == False:
                     path_routes.append(self.map_widget.set_path(jeepneys.points, color = jeepneys.color, width = 3))
-    
-        if self.jeep_active == 1:
-            self.jeep_active = 0  # button is active
-            self.button_2._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
-            
-            self.textbox2.pack_forget()
-            self.textbox2.grid_forget()
-        else:
-            self.jeep_active = 1  # button is inactive
-            self.button_2._fg_color = '#14375E'  # pag pinindot
-            self.textbox2.grid(row=9, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
-            self.textbox2.insert("0.0", "Blue =\nYellow =\nGreen =\nGray =")
+                    self.textbox2.insert(f"{count}.0", f"{jeepneys.color}={jeepneys.name}\n")
             self.textbox2.configure(state="disabled")
     pass
 
     def show_tricycle(self):
         if toda_station:
+            self.button_3._fg_color = list(('#3a7ebf', '#1f538d'))
             for toda in toda_station:
                 self.map_widget.delete(toda)
             toda_station.clear()
         else:
+            self.button_3._fg_color = '#14375E'
             for toda in Toda.all:
                 if toda.disabled == False:
                     toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image, text_color = "#5e1414", font = ['Basic', '13']))
-
-        if self.tric_active == 1:
-            self.tric_active = 0  # button is active
-            self.button_3._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
-        else:
-            self.tric_active = 1  # button is inactive
-            self.button_3._fg_color = '#14375E'  # pag pinindot
     pass
 
     def show_bus(self):
         if bus_terminal:
+            self.button_4._fg_color = list(('#3a7ebf', '#1f538d'))
             for marker in bus_terminal:
                 self.map_widget.delete(marker)
             bus_terminal.clear()
         else:
+            self.button_4._fg_color = '#14375E'
             for termi in Terminal.all:
                 if termi.disabled == False:
                     bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#14375E", font = ['Basic', '15'], marker_color_circle = "#87CEEB", icon=self.bmarker_image))
-        if self.bus_active == 1:
-            self.bus_active = 0  # button is active
-            self.button_4._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
-        else:
-            self.bus_active = 1  # button is inactive
-            self.button_4._fg_color = '#14375E'  # pag pinindot
     pass
 
     def on_closing(self, event=0):

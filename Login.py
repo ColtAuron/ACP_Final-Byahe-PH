@@ -34,10 +34,10 @@ class App(customtkinter.CTk):
 
         #import background
         self.current_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-        self.img1= customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path, 'map.png')), size=(1920,1080))
-        self.submit_img = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path, 'arrow-right.png')), size=(25,25))
-        self.logo_img = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path, 'icon.png')), size=(100,100))
-        self.back_img = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path, 'arrow-left.png')), size=(25,25))
+        self.img1= customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path, 'images', 'map.png')), size=(1920,1080))
+        self.submit_img = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path,'images', 'arrow-right.png')), size=(25,25))
+        self.logo_img = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path,'images', 'icon.png')), size=(100,100))
+        self.back_img = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.current_path,'images', 'arrow-left.png')), size=(25,25))
         self.bg=customtkinter.CTkLabel(master=self,image=self.img1, text="")
         self.bg.pack()
 
