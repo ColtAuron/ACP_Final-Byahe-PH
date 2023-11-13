@@ -122,7 +122,7 @@ class App(customtkinter.CTkToplevel):
         self.register_send= customtkinter.CTkButton(self.frame2, cursor='hand2', width=50, height=50, image=self.submit_img, text="", corner_radius=10, command=self.register)
         self.register_send.place(relx=0.5, rely=0.75, anchor=tkinter.CENTER)
 
-        self.error=customtkinter.CTkLabel(self.frame2,font=self.font3,text='',text_color='#fff', height=10, bg_color="transparent")
+        self.error=customtkinter.CTkLabel(self.frame2,font=self.font3,text='',text_color='#f00', height=10, bg_color="transparent")
         self.error.place(relx=0.5, rely=0.63, anchor=tkinter.CENTER)
 
         self.frame2.place_forget()
