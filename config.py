@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 class Route:
     all = []
@@ -709,10 +710,6 @@ BatangasGrand_Terminal = Terminal(
     disabled= False
 )
 
-con = sqlite3.connect('bphData.db')
-c = con.cursor()
-c.execute("PRAGMA foreign_keys = ON")
-
 # command = ('''CREATE TABLE IF NOT EXISTS ROUTE(
 #             RouteNum INTEGER PRIMARY KEY,
 #             Name Varchar(30),
@@ -816,15 +813,28 @@ c.execute("PRAGMA foreign_keys = ON")
 # for toda in termi_table:
 #     print(toda)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "bphData.db")
+con = sqlite3.connect(db_path)
+c = con.cursor()
+
+
+command = ('''CREATE TABLE IF NOT EXISTS ACCOUNT(
+            ID INTEGER PRIMARY KEY,
+            Email Varchar(30),
+            User Varchar(20),
+            Password Varchar(20),
+            Admin TINYINT(1)
+           )''')
+
+c.execute(command)
+
+c.execute("DELETE FROM ACCOUNT")
+
+account_table = c.fetchall()
+print(account_table)
+
 con.close()
-
-x = 3.14159265
-
-# Format x as a string with two decimal points
-y = round(x, 7)
-
-print(y)
-print(type(y))
 
 
 
