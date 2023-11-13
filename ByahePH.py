@@ -2,7 +2,6 @@ import customtkinter
 from tkintermapview import TkinterMapView
 import os
 import sqlite3
-from PIL import Image, ImageTk
 
 class Route:
     all = []
@@ -106,14 +105,6 @@ class App(customtkinter.CTk):
 
         self.marker_list = []
 
-        current_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-        self.tmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Tric.png")).resize((100,150)))
-        self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(current_path, "Bus.png")).resize((100,150)))
-       
-        self.jeep_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "jeep.png")).resize((50,50)))    
-        self.tric_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "tricycle.png")).resize((50,50)))
-        self.bus_button=ImageTk.PhotoImage(Image.open(os.path.join(current_path, "buss.png")).resize((50,50)))
-        
         # ============ create two CTkFrames ============
 
         self.grid_columnconfigure(0, weight=0)
@@ -129,7 +120,7 @@ class App(customtkinter.CTk):
         # Sidebar frame
         self.frame_left = customtkinter.CTkFrame(master=self, width=400, fg_color=None)
         self.frame_left.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
-        self.frame_left.grid_rowconfigure(9, weight=1)
+        self.frame_left.grid_rowconfigure(8, weight=1)
 
         # Main frame
         self.frame_right = customtkinter.CTkFrame(master=self)
@@ -143,23 +134,23 @@ class App(customtkinter.CTk):
         self.button_1 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
         self.button_1.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
 
-        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", image=self.jeep_button, command=self.show_jeep)
+        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", command=self.show_jeep)
         self.button_2.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
 
-        self.button_3 = customtkinter.CTkButton(master=self.frame_left,text="Tricycle", image=self.tric_button, command=self.show_tricycle) 
+        self.button_3 = customtkinter.CTkButton(master=self.frame_left, text="Tricycle", command=self.show_tricycle)
         self.button_3.grid(pady=(10, 10), padx=(20, 20), row=3, column=0)
 
-        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", image=self.bus_button, command=self.show_bus)
+        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", command=self.show_bus)
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
         self.textbox = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        self.textbox.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
 
         self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130)
-
-        self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130)
+        self.entry_1.grid(row=6, column=0, sticky="we", padx=(12, 12), pady=12)
        
         self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_suggest)
-        
+        self.button_5.grid(pady=(10, 10), padx=(20, 20), row=7, column=0)
 
         # Main frame
         self.frame_right.grid_rowconfigure(1, weight=1)
@@ -178,9 +169,9 @@ class App(customtkinter.CTk):
 
         
 
-        self.entry_3 = customtkinter.CTkEntry(master=self.frame_right, placeholder_text="Type Address")
-        self.entry_3.grid(row=0, column=0, sticky="we", padx=(12, 0), pady=12)
-        self.entry_3.bind("<Return>", self.search_event)
+        self.entry_2 = customtkinter.CTkEntry(master=self.frame_right, placeholder_text="Type Address")
+        self.entry_2.grid(row=0, column=0, sticky="we", padx=(12, 0), pady=12)
+        self.entry_2.bind("<Return>", self.search_event)
 
         self.button_6 = customtkinter.CTkButton(master=self.frame_right, text="Search", width=90, command=self.search_event)
         self.button_6.grid(row=0, column=1, sticky="w", padx=(12, 0), pady=12)
@@ -193,17 +184,15 @@ class App(customtkinter.CTk):
         
 
         # Set default values
-        #self.map_widget.set_address("Batangas City")
-        self.map_widget.set_position(deg_x=13.7582328,deg_y=121.0726133)
-        self.map_widget.set_zoom(13)
+        self.map_widget.set_address("Batangas City")
+        self.map_widget.set_zoom(11)
         self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.frame_left, values=["Dark", "Light", "System"], command=self.change_appearance_mode)
         self.appearance_mode_optionmenu.set("Dark")
         self.appearance_mode_optionmenu.grid(row=50, column=0, padx=(20, 20), pady=(10, 10))
-        
+        self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle & draw""\n")
+        self.textbox.configure(state="disabled")
 
         #variables for draw
-
-
         self.suggestion_active = 0
         self.temp_points = None
         self.start_points = None
@@ -217,12 +206,7 @@ class App(customtkinter.CTk):
             self.bind('<space>', self.toggle_coords)
             self.suggestion_active = 1 #Suggestion is active
             self.button_1._fg_color = 'blue'
-            self.textbox.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
-            self.textbox.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
-            self.textbox.configure(state="disabled")
-            self.entry_1.grid(row=6, column=0, sticky="we", padx=(12, 12), pady=12)
-            self.entry_2.grid(row=7, column=0, sticky="we", padx=(12, 12), pady=12)
-            self.button_5.grid(pady=(10, 10), padx=(20, 20), row=8, column=0)
+
         else:
             self.unbind('<space>')
             self.map_widget.canvas.config(cursor="arrow")
@@ -241,17 +225,6 @@ class App(customtkinter.CTk):
             self.temp_points = None
             c.execute("DELETE FROM DRAWPOINTS")
             con.commit()
-            self.textbox.pack_forget()
-            self.textbox.grid_forget()
-            self.entry_1.pack_forget()
-            self.entry_1.grid_forget()
-            self.entry_2.pack_forget()
-            self.entry_2.grid_forget()
-            self.button_5.pack_forget()
-            self.button_5.grid_forget()
-        pass
-
-    def show_image(self):
         pass
 
     def show_login(self):
@@ -314,7 +287,7 @@ class App(customtkinter.CTk):
                 self.temp_points = None
                 
     def search_event(self, event=None):
-        self.map_widget.set_address(self.entry_3.get())
+        self.map_widget.set_address(self.entry.get())
 
     def change_appearance_mode(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -346,7 +319,7 @@ class App(customtkinter.CTk):
         else:
             for toda in Toda.all:
                 if toda.disabled == False:
-                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda", icon=self.tmarker_image))
+                    toda_station.append(self.map_widget.set_marker(toda.X(), toda.Y(), text=f"{toda.locName} Toda"))
         pass
 
     def show_bus(self):
@@ -357,7 +330,7 @@ class App(customtkinter.CTk):
         else:
             for termi in Terminal.all:
                 if termi.disabled == False:
-                    bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB", icon=self.bmarker_image))
+                    bus_terminal.append(self.map_widget.set_marker(termi.X(), termi.Y(), text=f"{termi.locName} Terminal", marker_color_outside = "#00008B", text_color = "#00008B", marker_color_circle = "#87CEEB" ))
         pass
 
     def on_closing(self, event=0):
