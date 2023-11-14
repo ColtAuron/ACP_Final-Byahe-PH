@@ -6,7 +6,6 @@ import sqlite3
 from PIL import Image, ImageTk
 import ctypes
 import Login
-import time
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 class Route:
@@ -169,8 +168,7 @@ class App(customtkinter.CTk):
         
         self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130, height=10)
         
-        self.label = customtkinter.CTkLabel(master=self.frame_left, text="Label", height=1)
-        self.label.bind("<Button-1>", lambda event: self.show_label())
+        self.label = customtkinter.CTkLabel(master=self.frame_left, text="", height=1)
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_submit)
         
@@ -207,7 +205,7 @@ class App(customtkinter.CTk):
         self.signoutyes = customtkinter.CTkButton(master=self.frame_right, text="Yes", width=50, command=self.yes_button)       
         self.signoutno = customtkinter.CTkButton(master=self.frame_right, text="No", width=50, command=self.no_button)
         
-
+        self.keep_table = None
         c.execute("SELECT * FROM KEEPSIGNED")
         keep = c.fetchall()
         if keep:
@@ -277,15 +275,8 @@ class App(customtkinter.CTk):
             self.map_widget.canvas.bind("<Button-1>", self.map_widget.mouse_click)
             self.suggestion_active = 0 #Suggestion is inactive
             self.button_1._fg_color = list(('#3a7ebf','#1f538d')) #pag di pinindot
-            if self.marker_coords:
-                self.marker_coords.delete()
-            self.drawed_coordinates.clear()
-            self.start_points = None
-            if self.temp_points:
-                self.temp_points.delete()
-            self.temp_points = None
-            c.execute("DELETE FROM DRAWPOINTS")
-            con.commit()
+            self.clear_draw()
+            self.label.configure(text="")
             self.textbox1.pack_forget()
             self.textbox1.grid_forget()
             self.entry_1.pack_forget()
@@ -297,14 +288,12 @@ class App(customtkinter.CTk):
             self.label.pack_forget()
             self.label.grid_forget()
         pass
-
-    def show_label(self):
-        pass
     
     def log_out(self):
         c.execute("DELETE FROM KEEPSIGNED")
         con.commit()
         self.user_button.place_forget()
+        self.keep_table.clear()
         self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
         pass
 
@@ -312,7 +301,7 @@ class App(customtkinter.CTk):
         c.execute("SELECT * FROM KEEPSIGNED")
         self.keep_table = c.fetchall()
         if self.keep_table:
-            c.execute("SELECT * FROM ACCOUNT WHERE ID=?", (self.keep_table[0][0],))
+            c.execute("SELECT * FROM ACCOUNT WHERE ID=?", (self.keep_table[0][1],))
             user_table = c.fetchall()
             if self.keep_table[0][2] == user_table[0][3]:
                 self.button_7.pack_forget()
@@ -335,7 +324,47 @@ class App(customtkinter.CTk):
         self.refresh_login()
         pass
 
+    def clear_draw(self):
+        if self.marker_coords:
+            self.marker_coords.delete()
+        self.drawed_coordinates.clear()
+        self.start_points = None
+        if self.temp_points:
+            self.temp_points.delete()
+        self.temp_points = None
+        c.execute("DELETE FROM DRAWPOINTS")
+        con.commit()
+        self.entry_1.delete(0, len(self.entry_1.get()))
+        self.entry_2.delete(0, len(self.entry_2.get()))
+
     def show_submit(self):
+        if self.drawed_coordinates:
+            name = self.entry_1.get()
+            color = self.entry_2.get()
+            if name:
+                if color is not None:
+                    color = "Black"
+                if self.keep_table:
+                    author = self.keep_table[0][1]
+                    to_database = tuple((name, color, author))
+                    c.execute("INSERT INTO REQUESTROUTE (Name, Color, Author) VALUES (?,?,?)", to_database)
+                    con.commit()
+                    c.execute("SELECT Max(RouteNum) FROM REQUESTROUTE")
+                    ID = c.fetchall()[0][0]
+                    c.execute("SELECT * FROM DRAWPOINTS")
+                    drawed = c.fetchall()
+                    for item in drawed:
+                        pointo_database = tuple((item[1],item[2],ID))
+                        c.execute("INSERT INTO REQUESTPOINTS (Point_X, Point_Y, RouteNum) VALUES (?,?,?)", pointo_database)
+                    self.clear_draw()
+                    self.label.configure(text="Uploaded!", text_color='#0f0')
+                else:
+                    self.label.configure(text="Please Login First", text_color='#f00')
+                    self.show_login()
+            else:
+                self.label.configure(text="Input Route Name", text_color='#f00')
+        else:
+            self.label.configure(text="Kindly draw your Route", text_color='#f00')
         pass
 
     def toggle_coords(self, event=None):

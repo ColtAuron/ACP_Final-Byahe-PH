@@ -152,7 +152,6 @@ class App(customtkinter.CTkToplevel):
             if login_query:
                 if login_query[0][2] == Login_name and self.cipher_suit.decrypt(login_query[0][3]) == bytes(Login_pass, self.encoding):
                     to_database = tuple((login_query[0][0], login_query[0][3], self.keepsigned.get()))
-                    print(to_database)
                     self.c.execute("INSERT INTO KEEPSIGNED (UserID, Password, Keep) VALUES (?,?,?)", to_database)
                     self.con.commit()
                     self.con.close()

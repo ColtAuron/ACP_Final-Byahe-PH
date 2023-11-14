@@ -870,17 +870,28 @@ c.execute(command)
 # print(key_table)
 
 # keep_table = 1 
-# c.execute("SELECT * FROM ACCOUNT WHERE ID=?", (keep_table,))
+# c.execute("SELECT * FROM KEEPSIGNED")
 # user_table = c.fetchall()
 # print(user_table)
 
-c.execute("DELETE FROM KEEPSIGNED")
-out = c.fetchall()
-print(out)
+command = ('''CREATE TABLE IF NOT EXISTS REQUESTROUTE(
+            RouteNum INTEGER PRIMARY KEY,
+            Name Varchar(30),
+            Color Varchar(20),
+            Author Varchar(20)
+           )''')
 
+con.execute(command)
 
+command = ('''CREATE TABLE IF NOT EXISTS REQUESTPOINTS(
+           Id INTEGER PRIMARY KEY,
+           Point_X FLOAT(3, 7),
+           Point_Y FLOAT(3, 7),
+           RouteNum INTEGER,
+           FOREIGN KEY(RouteNum) REFERENCES REQUESTROUTE(RouteNum)
+)''')
 
-
+con.execute(command)
 
 con.close()
 
