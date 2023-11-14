@@ -162,9 +162,19 @@ class App(customtkinter.CTk):
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
         self.textbox1 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        
         self.textbox2 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        
         self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130)
+        
         self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130)
+        
+        self.label = customtkinter.CTkLabel(master=self.frame_left, text="Label")
+        self.label.bind("<Button-1>", lambda event: self.show_label())
+
+        
+
+
         self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_submit)
         
         # Main frame
@@ -255,11 +265,12 @@ class App(customtkinter.CTk):
             self.suggestion_active = 1 #Suggestion is active
             self.button_1._fg_color = '#14375E' #pag pinindot #14304a
             self.textbox1.grid(row=5, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
-            self.textbox1.insert("0.0", "\n""Click to create/draw.""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
+            self.textbox1.insert("0.0", "\n""Click to create/draw""\n""Ctrl+Z to undo""\n""Space to toggle draw""\n")
             self.textbox1.configure(state="disabled")
             self.entry_1.grid(row=6, column=0, sticky="we", padx=(12, 12), pady=12)
             self.entry_2.grid(row=7, column=0, sticky="we", padx=(12, 12), pady=12)
-            self.button_5.grid(pady=(10, 10), padx=(20, 20), row=8, column=0)
+            self.label.grid(row=8, column=0, sticky="we", padx=(12, 12), pady=10)
+            self.button_5.grid(pady=(10, 10), padx=(20, 20), row=9, column=0)
         else:
             self.unbind('<space>')
             self.map_widget.canvas.config(cursor="arrow")
@@ -286,8 +297,13 @@ class App(customtkinter.CTk):
             self.entry_2.grid_forget()
             self.button_5.pack_forget()
             self.button_5.grid_forget()
+            self.label.pack_forget()
+            self.label.grid_forget()
         pass
 
+    def show_label(self):
+        pass
+    
     def log_out(self):
         c.execute("DELETE FROM KEEPSIGNED")
         con.commit()
