@@ -118,9 +118,9 @@ class App(customtkinter.CTk):
         self.tmarker_image = ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'images', 'Tric.png')).resize((100, 150)))
         self.bmarker_image= ImageTk.PhotoImage(Image.open(os.path.join(BASE_DIR, 'images', 'Bus.png')).resize((100, 150)))
        
-        self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'jeep.png')), size=(50,50))    
-        self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'tricycle.png')), size=(50,50)) 
-        self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'buss.png')), size=(50,50)) 
+        self.jeep_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'jeep.png')), size=(35,35))    
+        self.tric_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'tricycle.png')), size=(35,35)) 
+        self.bus_button=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'buss.png')), size=(35,35)) 
         self.profile_pic=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'profile-icon.png')), size=(30,30)) 
         
         # ============ create two CTkFrames ============
@@ -148,32 +148,29 @@ class App(customtkinter.CTk):
 
         # Sidebar frame
         self.frame_left.grid_rowconfigure(1, weight=0)
-
-        self.button_1 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest)
+        
+        self.button_1 = customtkinter.CTkButton(master=self.frame_left, text="Suggest Route", command=self.show_suggest, height=35)
         self.button_1.grid(pady=(10, 10), padx=(20, 20), row=1, column=0)
 
-        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", image=self.jeep_button, command=self.show_jeep)
+        self.button_2 = customtkinter.CTkButton(master=self.frame_left, text="Jeep", image=self.jeep_button, command=self.show_jeep, height=20)
         self.button_2.grid(pady=(10, 10), padx=(20, 20), row=2, column=0)
 
-        self.button_3 = customtkinter.CTkButton(master=self.frame_left,text="Tricycle", image=self.tric_button, command=self.show_tricycle) 
+        self.button_3 = customtkinter.CTkButton(master=self.frame_left,text="Tricycle", image=self.tric_button, command=self.show_tricycle, height=20) 
         self.button_3.grid(pady=(10, 10), padx=(20, 20), row=3, column=0)
 
-        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", image=self.bus_button, command=self.show_bus)
+        self.button_4 = customtkinter.CTkButton(master=self.frame_left, text="Bus", image=self.bus_button, command=self.show_bus, height=20)
         self.button_4.grid(pady=(10, 10), padx=(20, 20), row=4, column=0)
 
-        self.textbox1 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        self.textbox1 = customtkinter.CTkTextbox(master=self.frame_left, activate_scrollbars=False, width=150, height=85)
         
-        self.textbox2 = customtkinter.CTkTextbox(master=self.frame_left, width=150, height=100)
+        self.textbox2 = customtkinter.CTkTextbox(master=self.frame_left, activate_scrollbars=False, width=150, height=85)
         
-        self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130)
+        self.entry_1 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route name/Jeep name", width=130, height=10)
         
-        self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130)
+        self.entry_2 = customtkinter.CTkEntry(master=self.frame_left, placeholder_text="Route Colour", width=130, height=10)
         
-        self.label = customtkinter.CTkLabel(master=self.frame_left, text="Label")
+        self.label = customtkinter.CTkLabel(master=self.frame_left, text="Label", height=1)
         self.label.bind("<Button-1>", lambda event: self.show_label())
-
-        
-
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_left, text="Submit", command=self.show_submit)
         
@@ -270,7 +267,7 @@ class App(customtkinter.CTk):
             self.entry_1.grid(row=6, column=0, sticky="we", padx=(12, 12), pady=12)
             self.entry_2.grid(row=7, column=0, sticky="we", padx=(12, 12), pady=12)
             self.label.grid(row=8, column=0, sticky="we", padx=(12, 12), pady=10)
-            self.button_5.grid(pady=(10, 10), padx=(20, 20), row=9, column=0)
+            self.button_5.grid(row=9, column=0, sticky="nwe", padx=(20, 20))
         else:
             self.unbind('<space>')
             self.map_widget.canvas.config(cursor="arrow")
@@ -418,7 +415,7 @@ class App(customtkinter.CTk):
             path_routes.clear()
         else:
             self.button_2._fg_color = '#14375E' 
-            self.textbox2.grid(row=9, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
+            self.textbox2.grid(row=10, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
             for count, jeepneys in enumerate(Route.all):
                 if jeepneys.disabled == False:
                     path_routes.append(self.map_widget.set_path(jeepneys.points, color = jeepneys.color, width = 3))
