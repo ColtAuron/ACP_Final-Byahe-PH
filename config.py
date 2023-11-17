@@ -874,24 +874,25 @@ c.execute(command)
 # user_table = c.fetchall()
 # print(user_table)
 
-command = ('''CREATE TABLE IF NOT EXISTS REQUESTROUTE(
-            RouteNum INTEGER PRIMARY KEY,
-            Name Varchar(30),
-            Color Varchar(20),
-            Author Varchar(20)
-           )''')
+# command = ('''CREATE TABLE IF NOT EXISTS REQUESTROUTE(
+#             RouteNum INTEGER PRIMARY KEY,
+#             Name Varchar(30),
+#             Color Varchar(20),
+#             Author Varchar(20)
+#            )''')
 
-con.execute(command)
+# con.execute(command)
 
-command = ('''CREATE TABLE IF NOT EXISTS REQUESTPOINTS(
-           Id INTEGER PRIMARY KEY,
-           Point_X FLOAT(3, 7),
-           Point_Y FLOAT(3, 7),
-           RouteNum INTEGER,
-           FOREIGN KEY(RouteNum) REFERENCES REQUESTROUTE(RouteNum)
-)''')
+# command = ('''CREATE TABLE IF NOT EXISTS REQUESTPOINTS(
+#            Id INTEGER PRIMARY KEY,
+#            Point_X FLOAT(3, 7),
+#            Point_Y FLOAT(3, 7),
+#            RouteNum INTEGER,
+#            FOREIGN KEY(RouteNum) REFERENCES REQUESTROUTE(RouteNum)
+# )''')
 
-con.execute(command)
+c.execute("DELETE FROM KEEPSIGNED")
+con.commit()
 
 con.close()
 

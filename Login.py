@@ -30,8 +30,8 @@ class App(customtkinter.CTkToplevel):
         self.app_Height = 650
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
-        self.CenterX = int((self.screen_width-self.app_Width-200)/2)
-        self.CenterY = int((self.screen_height-self.app_Height-200)/2)
+        self.CenterX = int((self.screen_width-self.app_Width)/2) #-200
+        self.CenterY = int((self.screen_height-self.app_Height)/2) #-200
 
         self.title("Byahe PH")
         self.geometry(f'{self.app_Width}x{self.app_Height}+{self.CenterX}+{self.CenterY}')

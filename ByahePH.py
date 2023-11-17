@@ -102,8 +102,8 @@ class App(customtkinter.CTk):
         self.title(App.APP_NAME)
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
-        self.CenterX = int((self.screen_width-App.WIDTH-375)/2)
-        self.CenterY = int((self.screen_height-App.HEIGHT-250)/2)
+        self.CenterX = int((self.screen_width-App.WIDTH)/2) #-375
+        self.CenterY = int((self.screen_height-App.HEIGHT)/2) #-250
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}+{self.CenterX}+{self.CenterY}")
         self.minsize(App.WIDTH, App.HEIGHT)
 
@@ -293,7 +293,8 @@ class App(customtkinter.CTk):
         c.execute("DELETE FROM KEEPSIGNED")
         con.commit()
         self.user_button.place_forget()
-        self.keep_table.clear()
+        if self.keep_table:
+            self.keep_table.clear()
         self.button_7.grid(row=0, column=2, sticky="e", padx=(12, 12), pady=12)
         pass
 
