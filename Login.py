@@ -12,8 +12,12 @@ from cryptography.fernet import Fernet
 ctypes.windll.shcore.SetProcessDpiAwareness(2) # windows version should >= 8.1
 
 class App(customtkinter.CTkToplevel):
+    
+    APP_NAME = "ByahePH"
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         self.encoding = "utf-8"
 
@@ -33,7 +37,17 @@ class App(customtkinter.CTkToplevel):
         self.CenterX = int((self.screen_width-self.app_Width)/2) #-200
         self.CenterY = int((self.screen_height-self.app_Height)/2) #-200
 
-        self.title("Byahe PH")
+        self.title((App.APP_NAME))
+     
+        self.width = int(self.winfo_screenwidth()/2.5)
+        self.height = int(self.winfo_screenheight()/2)
+        self.geometry(f"{self.width}x{self.height})")
+        self.minsize(500,500)
+        self.bind("<1>", lambda event: event.widget.focus_set())
+        self.iconpath=customtkinter.CTkImage(light_image=Image.open(os.path.join(self.BASE_DIR, 'images', 'jeep.ico')))
+        self.wm_iconbitmap()
+        self.iconphoto(False, ImageTk.PhotoImage(self.iconpath._light_image)) 
+
         self.geometry(f'{self.app_Width}x{self.app_Height}+{self.CenterX}+{self.CenterY}')
         self.minsize(width=self.app_Width, height=self.app_Height)
         self.maxsize(width=self.screen_width, height=self.screen_height)
@@ -138,7 +152,7 @@ class App(customtkinter.CTkToplevel):
         self.Register=customtkinter.CTkLabel(self.frame3,font=self.font1,text='About ByahePh',text_color='#fff')
         self.Register.place(relx=0.5, rely=0.10, anchor=tkinter.CENTER)
         
-        self.textbox = customtkinter.CTkLabel(master=self.frame3, width=300, height=400, text="AAAAAAAAA \n AAAAAAAAAA \n AAAAAAAAAAA \n")
+        self.textbox = customtkinter.CTkLabel(master=self.frame3, width=300, height=400, text="The ByahePH system was programmed by the \n Filipino students from Batangas State University. \n ByahePH is an application that is mainly used \n to find your desired routes, terminals, and todas \n around Batangas City to make your commute life easier. \n ByahePH helps users to reach on their \n destination without hesitation if they're being lost. \n It was founded on October 2023. \n")
         self.textbox.place(relx=0.5, rely=0.20, anchor=tkinter.N)
 
         self.frame3.place_forget()

@@ -100,6 +100,15 @@ class App(customtkinter.CTk):
         super().__init__(*args, **kwargs)
 
         self.title(App.APP_NAME)
+        self.width = int(self.winfo_screenwidth()/2.5)
+        self.height = int(self.winfo_screenheight()/2)
+        self.geometry(f"{self.width}x{self.height})")
+        self.minsize(500,500)
+        self.bind("<1>", lambda event: event.widget.focus_set())
+        self.iconpath=customtkinter.CTkImage(light_image=Image.open(os.path.join(BASE_DIR, 'images', 'jeep.ico')))
+        self.wm_iconbitmap()
+        self.iconphoto(False, ImageTk.PhotoImage(self.iconpath._light_image))
+
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
         self.CenterX = int((self.screen_width-App.WIDTH)/2) #-375
