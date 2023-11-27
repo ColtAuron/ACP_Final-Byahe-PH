@@ -891,8 +891,11 @@ c.execute(command)
 #            FOREIGN KEY(RouteNum) REFERENCES REQUESTROUTE(RouteNum)
 # )''')
 
-c.execute("DELETE FROM KEEPSIGNED")
-con.commit()
+# c.execute("DELETE FROM KEEPSIGNED")
+# con.commit()
+
+c.execute("SELECT COUNT(*) FROM TERMINAL")
+print(type(str(c.fetchall()[0][0])))
 
 con.close()
 
