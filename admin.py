@@ -55,8 +55,14 @@ class App(customtkinter.CTk):
         self.overview.place(relx=0.5, rely=0.17, anchor=tkinter.CENTER)
         self.users=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Users', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showusers)
         self.users.place(relx=0.5, rely=0.25, anchor=tkinter.CENTER)
-        self.extra2=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Extra2', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showextra2)
-        self.extra2.place(relx=0.5, rely=0.33, anchor=tkinter.CENTER)
+        self.requests=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Requests', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showrequests)
+        self.requests.place(relx=0.5, rely=0.33, anchor=tkinter.CENTER)
+        self.routes=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Jeep Routes', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showroutes)
+        self.routes.place(relx=0.5, rely=0.41, anchor=tkinter.CENTER)
+        self.todas=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Toda Pins', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showtodas)
+        self.todas.place(relx=0.5, rely=0.49, anchor=tkinter.CENTER)
+        self.bus=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Bus Pins', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showbus)
+        self.bus.place(relx=0.5, rely=0.57, anchor=tkinter.CENTER)
 
         #--------- OV Frame ----------
 
@@ -109,8 +115,24 @@ class App(customtkinter.CTk):
         self.userscroll= customtkinter.CTkScrollableFrame(self.usersframe, width=810, height=500)
         self.userscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
         self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.usertableclick)
+
+        #--------- Requests Frame ----------
+        self.requestsframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+
+        #--------- Jeep Routes Frame ----------
+        self.jeepframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+
+        #--------- Toda Pins Frame ----------
+        self.todaframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+
+        #--------- Bus Pins Frame ----------
+        self.busframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+
+
         self.showoverview()
     
+    #----------- OV ------------
+
     def showoverview(self):
         self.OVFrame.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.overview.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
@@ -124,16 +146,17 @@ class App(customtkinter.CTk):
         self.OVtrikenum.configure(text=str(self.c.fetchall()[0][0]))
         self.c.execute("SELECT COUNT(*) FROM TERMINAL")
         self.OVbusnum.configure(text=str(self.c.fetchall()[0][0]))
-        self.unshowextra2()
+        self.unshowrequests()
         self.unshowusers()
 
     def unshowoverview(self):
         self.OVFrame.place_forget()
         self.overview.configure(state='normal', fg_color='transparent',)
 
+    #----------- users ------------
+
     def showusers(self):
-        self.unshowextra2()
-        self.unshowoverview()
+        self.unshowall()
         self.usersframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.users.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
         self.refreshusers()
@@ -205,12 +228,58 @@ class App(customtkinter.CTk):
         self.usersframe.place_forget()
         self.users.configure(state='normal', fg_color='transparent',)
 
-    def showextra2(self):
-        self.unshowoverview()
-        self.unshowusers()
+    #--------------- Requests -------------
 
-    def unshowextra2(self):
+    def showrequests(self):
+        self.unshowall()
+        self.requestsframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+
+    def unshowrequests(self):
+        self.requestsframe.place_forget()
         pass
 
+    #--------------- Routes ---------------
+
+    def showroutes(self):
+        self.unshowall()
+        self.jeepframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        pass
+
+    def unshowroutes(self):
+        self.jeepframe.place_forget()
+        pass
+
+    #--------------- Todas ----------------
+
+    def showtodas(self):
+        self.unshowall()
+        self.todaframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        pass
+
+    def unshowtodas(self):
+        self.todaframe.place_forget()
+        pass
+
+    #-------------- Bus -------------------
+
+    def showbus(self):
+        self.unshowall()
+        self.busframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        pass
+
+    def unshowbus(self):
+        self.busframe.place_forget()
+        pass
+
+    #------------- Misc ------------------
+
+    def unshowall(self):
+        self.unshowoverview()
+        self.unshowusers()
+        self.unshowrequests()
+        self.unshowroutes()
+        self.unshowtodas()
+        self.unshowbus()
+        pass
 
 App().mainloop()
