@@ -179,14 +179,24 @@ class App(customtkinter.CTk):
                         CTkMessagebox(title="Error", message="Input only 1 or 2", icon="cancel") #Alert User
                 else:
                     if args["column"] == 1:#Checks if the column is for email type
+                        self.c.execute("SELECT Email FROM ACCOUNT WHERE Email=?", (output,))
+                        email_table = self.c.fetchall()
                         if (re.fullmatch(self.regex, output)):
-                            self.c.execute("UPDATE ACCOUNT SET Email = ? WHERE ID=?", (output, id)) #Change Query
-                            self.con.commit() 
+                            if email_table == []:
+                                self.c.execute("UPDATE ACCOUNT SET Email = ? WHERE ID=?", (output, id)) #Change Query
+                                self.con.commit()
+                            else:
+                                CTkMessagebox(title="Error", message="Email Already Taken", icon="cancel")
                         else:
                             CTkMessagebox(title="Error", message="Invalid Email", icon="cancel") #Alert User
                     else:
-                        self.c.execute("UPDATE ACCOUNT SET User = ? WHERE ID=?", (output, id)) #Change Query
-                        self.con.commit()
+                        self.c.execute("SELECT User FROM ACCOUNT WHERE User=?", (output,))
+                        username_table = self.c.fetchall()
+                        if username_table == []:
+                            self.c.execute("UPDATE ACCOUNT SET User = ? WHERE ID=?", (output, id)) #Change Query
+                            self.con.commit()
+                        else:
+                            CTkMessagebox(title="Error", message="Username Already Taken", icon="cancel")
         self.userstable.destroy() #Destroys current table
         self.refreshusers() #Creates and build from the database
     
