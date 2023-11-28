@@ -134,6 +134,7 @@ class App(customtkinter.CTk):
     #----------- OV ------------
 
     def showoverview(self):
+        self.unshowall()
         self.OVFrame.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.overview.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
         self.c.execute("SELECT COUNT(*) FROM ACCOUNT")
@@ -146,8 +147,6 @@ class App(customtkinter.CTk):
         self.OVtrikenum.configure(text=str(self.c.fetchall()[0][0]))
         self.c.execute("SELECT COUNT(*) FROM TERMINAL")
         self.OVbusnum.configure(text=str(self.c.fetchall()[0][0]))
-        self.unshowrequests()
-        self.unshowusers()
 
     def unshowoverview(self):
         self.OVFrame.place_forget()
@@ -233,9 +232,11 @@ class App(customtkinter.CTk):
     def showrequests(self):
         self.unshowall()
         self.requestsframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        self.requests.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
 
     def unshowrequests(self):
         self.requestsframe.place_forget()
+        self.requests.configure(state='normal', fg_color='transparent',)
         pass
 
     #--------------- Routes ---------------
@@ -243,10 +244,12 @@ class App(customtkinter.CTk):
     def showroutes(self):
         self.unshowall()
         self.jeepframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        self.routes.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
         pass
 
     def unshowroutes(self):
         self.jeepframe.place_forget()
+        self.routes.configure(state='normal', fg_color='transparent',)
         pass
 
     #--------------- Todas ----------------
@@ -254,10 +257,12 @@ class App(customtkinter.CTk):
     def showtodas(self):
         self.unshowall()
         self.todaframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        self.todas.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
         pass
 
     def unshowtodas(self):
         self.todaframe.place_forget()
+        self.todas.configure(state='normal', fg_color='transparent',)
         pass
 
     #-------------- Bus -------------------
@@ -265,10 +270,12 @@ class App(customtkinter.CTk):
     def showbus(self):
         self.unshowall()
         self.busframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        self.bus.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
         pass
 
     def unshowbus(self):
         self.busframe.place_forget()
+        self.bus.configure(state='normal', fg_color='transparent',)
         pass
 
     #------------- Misc ------------------
