@@ -2,3 +2,5 @@ tkintermapview
 customtkinter
 packaging
 cryptography
+CTkTable
+CTKMessagebox

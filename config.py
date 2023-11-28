@@ -893,9 +893,8 @@ c.execute(command)
 
 # c.execute("DELETE FROM KEEPSIGNED")
 # con.commit()
-
-c.execute("SELECT COUNT(*) FROM TERMINAL")
-print(type(str(c.fetchall()[0][0])))
+c.execute("SELECT * FROM ACCOUNT")
+print(c.fetchall())
 
 con.close()
 
