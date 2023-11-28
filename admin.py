@@ -108,7 +108,7 @@ class App(customtkinter.CTk):
         self.userstitle.place(relx=.420, rely=.13, anchor=tkinter.CENTER)
         self.userscroll= customtkinter.CTkScrollableFrame(self.usersframe, width=810, height=500)
         self.userscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
-        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.tableclick)
+        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.usertableclick)
         self.showoverview()
     
     def showoverview(self):
@@ -144,10 +144,10 @@ class App(customtkinter.CTk):
         table = self.c.fetchall()
         for items in table:
             updated_table.append((items[0],items[1],items[2],items[3],'DELETE'))
-        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=updated_table, command=self.tableclick)
+        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=updated_table, command=self.usertableclick)
         self.userstable.pack()
 
-    def tableclick(self, args):
+    def usertableclick(self, args):
         if args["value"] == 'DELETE':
             user = self.userstable.get_row(row=args["row"])[2]
             id = int(self.userstable.get_row(row=args["row"])[0])

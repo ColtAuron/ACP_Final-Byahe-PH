@@ -235,5 +235,3 @@ class App(customtkinter.CTkToplevel):
 
     def start(self):
         App().mainloop()
-
-App().start()
