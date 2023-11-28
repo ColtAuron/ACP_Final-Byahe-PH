@@ -144,51 +144,51 @@ class App(customtkinter.CTk):
         table = self.c.fetchall()
         for items in table:
             updated_table.append((items[0],items[1],items[2],items[3],'DELETE'))
-        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=updated_table, command=self.usertableclick)
+        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=updated_table, command=self.usertableclick) #self.usertableclick returns values rows, colm, args
         self.userstable.pack()
 
-    def usertableclick(self, args):
-        if args["value"] == 'DELETE':
-            user = self.userstable.get_row(row=args["row"])[2]
-            id = int(self.userstable.get_row(row=args["row"])[0])
-            msg = CTkMessagebox(title="Delete?", message=f"Delete user: {user} id: {id} ?", icon="question", option_1="No", option_3="Yes")
-            response = msg.get()
-            if response=="Yes":
-                self.c.execute("DELETE from ACCOUNT WHERE ID=?", (id,)) 
-                self.con.commit()
-                CTkMessagebox(title="DELETED!", message="Successfully Deleted")
-        elif args["column"] == 0:
-            CTkMessagebox(title="Error", message="Altering IDs are not allowed", icon="cancel")
+    def usertableclick(self, args): #stored in the first argument
+        if args["value"] == 'DELETE': #calls the value with key "value"
+            user = self.userstable.get_row(row=args["row"])[2] #"Grabs the column 2 which is the username"
+            id = int(self.userstable.get_row(row=args["row"])[0]) #Grabs the column 0 which is the ID
+            msg = CTkMessagebox(title="Delete?", message=f"Delete user: {user} id: {id} ?", icon="question", option_1="No", option_3="Yes") #Asks for confirmation
+            response = msg.get() #Waits and grabs information
+            if response=="Yes": #Self explanatory DUUUHH
+                self.c.execute("DELETE from ACCOUNT WHERE ID=?", (id,)) #Delete query
+                self.con.commit() #Commit and save changes
+                CTkMessagebox(title="DELETED!", message="Successfully Deleted") #Alert User
+        elif args["column"] == 0: #Checks if the column is equal to 0 meaning its an ID
+            CTkMessagebox(title="Error", message="Altering IDs are not allowed", icon="cancel") #Alert User
         else:
-            text = "Alter: "
+            text = "Alter: " 
             title = "Change "
-            if args["column"] == 3:
-                text = "Alter: 1 = True, 0 = False"
+            if args["column"] == 3: #Check if the column is for admin type
+                text = "Alter: 1 = True, 0 = False" #Then display this
                 title = "Give Administrator"
-            tochange = args["value"]
-            id = int(self.userstable.get_row(row=args["row"])[0])
-            dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange)
-            output = dialog.get_input()
+            tochange = args["value"] #Grabs value of the clicked
+            id = int(self.userstable.get_row(row=args["row"])[0]) 
+            dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange) #Prompt user for change
+            output = dialog.get_input() 
             if output:
-                if args["column"] == 3:
+                if args["column"] == 3:  #Check if the column is for admin type
                     number = int(output)
-                    if number == 1 or number == 0:
-                        self.c.execute("UPDATE ACCOUNT SET Admin = ? WHERE ID=?", (number, id))
+                    if number == 1 or number == 0: #Check if its only 1 or 0
+                        self.c.execute("UPDATE ACCOUNT SET Admin = ? WHERE ID=?", (number, id)) #Change Query
                         self.con.commit()
                     else:
-                        CTkMessagebox(title="Error", message="Input only 1 or 2", icon="cancel")
+                        CTkMessagebox(title="Error", message="Input only 1 or 2", icon="cancel") #Alert User
                 else:
-                    if args["column"] == 1:
+                    if args["column"] == 1:#Checks if the column is for email type
                         if (re.fullmatch(self.regex, output)):
-                            self.c.execute("UPDATE ACCOUNT SET Email = ? WHERE ID=?", (output, id))
-                            self.con.commit()
+                            self.c.execute("UPDATE ACCOUNT SET Email = ? WHERE ID=?", (output, id)) #Change Query
+                            self.con.commit() 
                         else:
-                            CTkMessagebox(title="Error", message="Invalid Email", icon="cancel")
+                            CTkMessagebox(title="Error", message="Invalid Email", icon="cancel") #Alert User
                     else:
-                        self.c.execute("UPDATE ACCOUNT SET User = ? WHERE ID=?", (output, id))
+                        self.c.execute("UPDATE ACCOUNT SET User = ? WHERE ID=?", (output, id)) #Change Query
                         self.con.commit()
-        self.userstable.destroy()
-        self.refreshusers()
+        self.userstable.destroy() #Destroys current table
+        self.refreshusers() #Creates and build from the database
     
     def unshowusers(self):
         self.userstable.destroy()
