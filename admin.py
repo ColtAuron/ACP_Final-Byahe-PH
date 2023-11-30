@@ -381,6 +381,9 @@ class ColtInspect(customtkinter.CTkToplevel):
         self.CenterX = int((self.screen_width-800)/2) #-200
         self.CenterY = int((self.screen_height-600)/2) #-200
         self.geometry(f"{800}x{600}+{self.CenterX}+{self.CenterY}")
+        self.maxsize(width=800, height=600)
+        self.minsize(width=800, height=600)
+        self.grab_set()
         title = "Route"
         if len(points) == 1:
             title = "Point"
@@ -403,6 +406,7 @@ class ColtInspect(customtkinter.CTkToplevel):
 
     def _on_closing(self):
         self.map_widget.delete(self.obj)
+        self.grab_release
         self.destroy()
         
 
