@@ -893,8 +893,14 @@ c.execute(command)
 
 # c.execute("DELETE FROM KEEPSIGNED")
 # con.commit()
-c.execute("SELECT * FROM ACCOUNT")
-print(c.fetchall())
+
+
+# c.execute("UPDATE REQUESTROUTE SET Author = 3 WHERE RouteNum=1")
+# con.commit()
+# c.execute("SELECT Point_X, Point_Y FROM REQUESTPOINTS WHERE RouteNum = 1")
+# print(c.fetchall())
+route = [(1,2),(3,4)]
+print(len(route))
 
 con.close()
 

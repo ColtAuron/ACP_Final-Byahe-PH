@@ -47,8 +47,8 @@ class ColtInputDialog(CTkToplevel):
         self._font = font
         self._placeholder_text = placeholder_text
 
-        self.app_Width = 350
-        self.app_Height = 170
+        self.app_Width = 400
+        self.app_Height = 200
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
         self.CenterX = int((self.screen_width-self.app_Width)/2) #-200

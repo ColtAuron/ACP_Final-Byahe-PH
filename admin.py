@@ -7,6 +7,7 @@ from CTkTable import *
 from CTkMessagebox import CTkMessagebox
 from coltinputdialog import ColtInputDialog
 import re
+from tkintermapview import TkinterMapView
 
 class App(customtkinter.CTk):
     def __init__(self, *args, **kwargs):
@@ -109,8 +110,8 @@ class App(customtkinter.CTk):
         #--------- Users Frame ----------
 
         self.usersframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
-        values = [['ID', 'Email', 'Username', 'Admin']]
-        self.userstitle=CTkTable(master=self.usersframe, width=160, height=10, values=values)
+        usersvalues = [['ID', 'Email', 'Username', 'Admin']]
+        self.userstitle=CTkTable(master=self.usersframe, width=160, height=10, values=usersvalues)
         self.userstitle.place(relx=.420, rely=.13, anchor=tkinter.CENTER)
         self.userscroll= customtkinter.CTkScrollableFrame(self.usersframe, width=810, height=500)
         self.userscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
@@ -118,6 +119,12 @@ class App(customtkinter.CTk):
 
         #--------- Requests Frame ----------
         self.requestsframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+        requestsvalues = [['Route Number', 'Name', 'Color', 'Author']]
+        self.requeststitle=CTkTable(master=self.requestsframe, width=113, height=10, values=requestsvalues)
+        self.requeststitle.place(relx=.328, rely=.13, anchor=tkinter.CENTER)
+        self.requestscroll= customtkinter.CTkScrollableFrame(self.requestsframe, width=810, height=500)
+        self.requestscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
+        self.requesttable=CTkTable(master=self.requestscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.reqtableclick)
 
         #--------- Jeep Routes Frame ----------
         self.jeepframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
@@ -128,8 +135,8 @@ class App(customtkinter.CTk):
         #--------- Bus Pins Frame ----------
         self.busframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
 
+        self.showrequests()
 
-        self.showoverview()
     
     #----------- OV ------------
 
@@ -191,7 +198,7 @@ class App(customtkinter.CTk):
             id = int(self.userstable.get_row(row=args["row"])[0]) 
             dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange) #Prompt user for change
             output = dialog.get_input() 
-            if output:
+            if output and output != tochange:
                 if args["column"] == 3:  #Check if the column is for admin type
                     number = int(output)
                     if number == 1 or number == 0: #Check if its only 1 or 0
@@ -233,10 +240,87 @@ class App(customtkinter.CTk):
         self.unshowall()
         self.requestsframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.requests.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
+        self.refreshrequests()
 
     def unshowrequests(self):
+        self.requesttable.destroy()
         self.requestsframe.place_forget()
         self.requests.configure(state='normal', fg_color='transparent',)
+        pass
+
+    def refreshrequests(self):
+        updated_table = list()
+        self.c.execute("SELECT RouteNum, Name, Color, Author FROM REQUESTROUTE")
+        table = self.c.fetchall()
+        for items in table:
+            self.c.execute("SELECT User FROM ACCOUNT WHERE ID=?", (items[3],))
+            author = self.c.fetchall()
+            updated_table.append((items[0],items[1],items[2],author,'INSPECT','ACCEPT', 'DELETE'))
+        self.requesttable=CTkTable(master=self.requestscroll, width=150, height=10, values=updated_table, command=self.reqtableclick) #self.usertableclick returns values rows, colm, args
+        self.requesttable.pack()
+        pass
+
+    def reqtableclick(self, args):
+        name = self.requesttable.get_row(row=args["row"])[1]
+        id = int(self.requesttable.get_row(row=args["row"])[0])
+        if args["value"] == 'DELETE': 
+            msg = CTkMessagebox(title="Delete?", message=f"Delete Route: {name}, RNum = {id} ?", icon="question", option_1="No", option_3="Yes")
+            response = msg.get()
+            if response=="Yes":
+                self.c.execute("DELETE from REQUESTROUTE WHERE RouteNum=?", (id,)) 
+                self.con.commit() 
+                CTkMessagebox(title="DELETED!", message="Successfully Deleted") 
+        elif args["value"] == 'ACCEPT':
+            msg = CTkMessagebox(title="ACCEPT?", message=f"Accept Route Name: {name}, \nRNum = {id} ?", icon="question", option_1="No", option_3="Yes")
+            response = msg.get()
+            if response=="Yes":
+                color = self.requesttable.get_row(row=args["row"])[2]
+                self.c.execute("SELECT Point_X, Point_Y FROM REQUESTPOINTS WHERE RouteNum=?", (id,))
+                points = self.c.fetchall()
+                self.c.execute("INSERT INTO ROUTE (Name, Color) VALUES (?,?)", (name, color))
+                self.con.commit()
+                self.c.execute("SELECT Max(RouteNum) FROM ROUTE")
+                newID = self.c.fetchall()[0][0]
+                for point in points:
+                    self.c.execute("INSERT INTO POINTS (Point_X, Point_Y, RouteNum) VALUES (?,?,?)", (point[0], point[1], newID))
+                    self.con.commit()
+                CTkMessagebox(title="COMMITED!", message="Successfully Added!")
+        elif args["value"] == 'INSPECT':
+            self.c.execute("SELECT Point_X, Point_Y FROM REQUESTPOINTS WHERE RouteNum=?", (id,))
+            points = self.c.fetchall()
+            color = self.requesttable.get_row(row=args["row"])[2]
+            InspectWindow = ColtInspect(points, name, color)
+            InspectWindow.after(100, InspectWindow.lift)
+            InspectWindow.wait_window()
+        elif args["column"] == 0: 
+            CTkMessagebox(title="Error", message="Altering IDs are not allowed", icon="cancel") 
+        elif args["column"] == 3:
+            CTkMessagebox(title="Error", message="Altering Authors are not allowed", icon="cancel") 
+        else:
+            text = "Enter Route Name" 
+            title = "Change Name"
+            if args["column"] == 2: 
+                text = "Change Route Color: (HEX OR VALID COLOR) \n VALID HEX: #rgb #rrggbb #rrrgggbbb \n (EXAMPLE: #F00 = RED)" 
+                title = "Change Color"
+            tochange = args["value"] 
+            dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange) #Prompt user for change
+            output = dialog.get_input()
+            if output and output != tochange:
+                if args["column"] == 2: #route color
+                    self.c.execute("UPDATE REQUESTROUTE SET Color = ? WHERE RouteNum=?", (output, id)) #Change Query
+                    self.con.commit()
+                    CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                else:
+                    self.c.execute("SELECT Name FROM REQUESTROUTE WHERE Name=?", (output,))
+                    username_table = self.c.fetchall()
+                    if username_table == []:
+                        self.c.execute("UPDATE REQUESTROUTE SET Name = ? WHERE RouteNum=?", (output, id)) #Change Query
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Username Already Taken", icon="cancel")
+        self.requesttable.destroy()
+        self.refreshrequests()
         pass
 
     #--------------- Routes ---------------
@@ -288,5 +372,41 @@ class App(customtkinter.CTk):
         self.unshowtodas()
         self.unshowbus()
         pass
+
+class ColtInspect(customtkinter.CTkToplevel):
+    def __init__(self, points, name, color = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.screen_width = self.winfo_screenwidth()
+        self.screen_height = self.winfo_screenheight()
+        self.CenterX = int((self.screen_width-800)/2) #-200
+        self.CenterY = int((self.screen_height-600)/2) #-200
+        self.geometry(f"{800}x{600}+{self.CenterX}+{self.CenterY}")
+        title = "Route"
+        if len(points) == 1:
+            title = "Point"
+        self.title(f"{name} {title}")
+        self.attributes("-topmost", True)
+        self.protocol("WM_DELETE_WINDOW", self._on_closing)
+
+        self.BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        self.db_path = os.path.join(self.BASE_DIR, "batangas.db")
+
+        self.map_widget = TkinterMapView(self, width=800, height=600,database_path=self.db_path, use_database_only=False)
+        self.map_widget.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
+        self.map_widget.set_position(deg_x=points[0][0],deg_y=points[0][1])
+
+        if len(points) == 1:
+            self.obj = self.map_widget.set_marker(deg_x=points[0][0], deg_y=points[0][1], text=name)
+        else:
+            self.obj = self.map_widget.set_path(position_list=points, color=color, width=3)
+
+    def _on_closing(self):
+        self.map_widget.delete(self.obj)
+        self.destroy()
+        
+
+
+
 
 App().mainloop()

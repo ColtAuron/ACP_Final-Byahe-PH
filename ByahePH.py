@@ -50,41 +50,9 @@ db_path = os.path.join(BASE_DIR, "bphData.db")
 con = sqlite3.connect(db_path)
 c = con.cursor()
 
-#Load tables
-c.execute("SELECT * FROM POINTS")
-points_table = c.fetchall()
-
-c.execute("SELECT * FROM ROUTE")
-route_table = c.fetchall()
-
-c.execute("SELECT * FROM TODA")
-toda_table = c.fetchall()
-
-c.execute("SELECT * FROM TERMINAL")
-terminal_table = c.fetchall()
-
-#input tables information to classes
-
-for jeepneys in route_table:
-    c.execute(f"SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum = {jeepneys[0]}") 
-    points = c.fetchall()
-    Route(points, jeepneys[2], jeepneys[1], jeepneys[3])
-for toda in toda_table:
-    Toda((toda[1],toda[2]),toda[3],toda[4])
-for termi in terminal_table:
-    Terminal((termi[1],termi[2]),termi[3],termi[4])
-
 path_routes = []
 toda_station = []
 bus_terminal = []
-
-command = ('''CREATE TABLE IF NOT EXISTS DRAWPOINTS(
-           Id INTEGER PRIMARY KEY,
-           Point_X FLOAT(3, 7),
-           Point_Y FLOAT(3, 7)
-)''')
-
-c.execute(command)
 
 c.execute("SELECT Point_X, Point_Y FROM DRAWPOINTS")
 Draw_table = c.fetchall()
@@ -446,13 +414,21 @@ class App(customtkinter.CTk):
 
     def show_jeep(self):
         if path_routes:
+            Route.all.clear()
             self.button_2._fg_color = list(('#3a7ebf', '#1f538d'))  # pag di pinindot
-            self.textbox2.pack_forget()
+            self.textbox2.configure(state="normal")
+            self.textbox2.delete("0.0", "end")
             self.textbox2.grid_forget()
             for jeepneys in path_routes:
                 self.map_widget.delete(jeepneys)
             path_routes.clear()
         else:
+            c.execute("SELECT * FROM ROUTE")
+            route_table = c.fetchall()
+            for jeepneys in route_table:
+                c.execute(f"SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum = {jeepneys[0]}") 
+                points = c.fetchall()
+                Route(points, jeepneys[2], jeepneys[1], jeepneys[3])
             self.button_2._fg_color = '#14375E' 
             self.textbox2.grid(row=10, column=0, padx=(15, 15), pady=(20, 0), sticky="nw")
             for count, jeepneys in enumerate(Route.all):
@@ -464,11 +440,16 @@ class App(customtkinter.CTk):
 
     def show_tricycle(self):
         if toda_station:
+            Toda.all.clear()
             self.button_3._fg_color = list(('#3a7ebf', '#1f538d'))
             for toda in toda_station:
                 self.map_widget.delete(toda)
             toda_station.clear()
         else:
+            c.execute("SELECT * FROM TODA")
+            toda_table = c.fetchall()
+            for toda in toda_table:
+                Toda((toda[1],toda[2]),toda[3],toda[4])
             self.button_3._fg_color = '#14375E'
             for toda in Toda.all:
                 if toda.disabled == False:
@@ -477,11 +458,16 @@ class App(customtkinter.CTk):
 
     def show_bus(self):
         if bus_terminal:
+            Terminal.all.clear()
             self.button_4._fg_color = list(('#3a7ebf', '#1f538d'))
             for marker in bus_terminal:
                 self.map_widget.delete(marker)
             bus_terminal.clear()
         else:
+            c.execute("SELECT * FROM TERMINAL")
+            terminal_table = c.fetchall()
+            for termi in terminal_table:
+                Terminal((termi[1],termi[2]),termi[3],termi[4])
             self.button_4._fg_color = '#14375E'
             for termi in Terminal.all:
                 if termi.disabled == False:
