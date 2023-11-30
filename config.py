@@ -897,10 +897,11 @@ c.execute(command)
 
 # c.execute("UPDATE REQUESTROUTE SET Author = 3 WHERE RouteNum=1")
 # con.commit()
-# c.execute("SELECT Point_X, Point_Y FROM REQUESTPOINTS WHERE RouteNum = 1")
-# print(c.fetchall())
-route = [(1,2),(3,4)]
-print(len(route))
+c.execute("DELETE FROM ROUTE WHERE RouteNum=5")
+con.commit()
+c.execute("SELECT * FROM ROUTE")
+print(c.fetchall())
+
 
 con.close()
 

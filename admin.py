@@ -128,6 +128,12 @@ class App(customtkinter.CTk):
 
         #--------- Jeep Routes Frame ----------
         self.jeepframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+        Jeepvalues = [['Route Number', 'Name', 'Color', 'Disabled']]
+        self.jeeptitle= CTkTable(master=self.jeepframe, width=135, height=10, values=Jeepvalues)
+        self.jeeptitle.place(relx=.365, rely=.13, anchor=tkinter.CENTER)
+        self.jeepscroll= customtkinter.CTkScrollableFrame(self.jeepframe, width=810, height=500)
+        self.jeepscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
+        self.jeeptable=CTkTable(master=self.jeepscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.routetableclick)
 
         #--------- Toda Pins Frame ----------
         self.todaframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
@@ -135,7 +141,7 @@ class App(customtkinter.CTk):
         #--------- Bus Pins Frame ----------
         self.busframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
 
-        self.showrequests()
+        self.showroutes()
 
     
     #----------- OV ------------
@@ -173,8 +179,11 @@ class App(customtkinter.CTk):
         table = self.c.fetchall()
         for items in table:
             updated_table.append((items[0],items[1],items[2],items[3],'DELETE'))
-        self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=updated_table, command=self.usertableclick) #self.usertableclick returns values rows, colm, args
-        self.userstable.pack()
+        try:
+            self.userstable=CTkTable(master=self.userscroll, width=200, height=10, values=updated_table, command=self.usertableclick) #self.usertableclick returns values rows, colm, args
+            self.userstable.pack()
+        except:
+            pass
 
     def usertableclick(self, args): #stored in the first argument
         if args["value"] == 'DELETE': #calls the value with key "value"
@@ -249,15 +258,18 @@ class App(customtkinter.CTk):
         pass
 
     def refreshrequests(self):
-        updated_table = list()
+        updated_table = None
         self.c.execute("SELECT RouteNum, Name, Color, Author FROM REQUESTROUTE")
         table = self.c.fetchall()
         for items in table:
             self.c.execute("SELECT User FROM ACCOUNT WHERE ID=?", (items[3],))
             author = self.c.fetchall()
             updated_table.append((items[0],items[1],items[2],author,'INSPECT','ACCEPT', 'DELETE'))
-        self.requesttable=CTkTable(master=self.requestscroll, width=150, height=10, values=updated_table, command=self.reqtableclick) #self.usertableclick returns values rows, colm, args
-        self.requesttable.pack()
+        try:
+            self.requesttable=CTkTable(master=self.requestscroll, width=150, height=10, values=updated_table, command=self.reqtableclick) #self.usertableclick returns values rows, colm, args
+            self.requesttable.pack()
+        except:
+            pass
         pass
 
     def reqtableclick(self, args):
@@ -268,7 +280,9 @@ class App(customtkinter.CTk):
             response = msg.get()
             if response=="Yes":
                 self.c.execute("DELETE from REQUESTROUTE WHERE RouteNum=?", (id,)) 
-                self.con.commit() 
+                self.con.commit()
+                self.c.execute("DELETE FROM REQUESTPOINTS WHERE RouteNum=?", (id,))
+                self.con.commit()
                 CTkMessagebox(title="DELETED!", message="Successfully Deleted") 
         elif args["value"] == 'ACCEPT':
             msg = CTkMessagebox(title="ACCEPT?", message=f"Accept Route Name: {name}, \nRNum = {id} ?", icon="question", option_1="No", option_3="Yes")
@@ -277,13 +291,17 @@ class App(customtkinter.CTk):
                 color = self.requesttable.get_row(row=args["row"])[2]
                 self.c.execute("SELECT Point_X, Point_Y FROM REQUESTPOINTS WHERE RouteNum=?", (id,))
                 points = self.c.fetchall()
-                self.c.execute("INSERT INTO ROUTE (Name, Color) VALUES (?,?)", (name, color))
+                self.c.execute("INSERT INTO ROUTE (Name, Color, Disabled) VALUES (?,?,?)", (name, color, 0))
                 self.con.commit()
                 self.c.execute("SELECT Max(RouteNum) FROM ROUTE")
                 newID = self.c.fetchall()[0][0]
                 for point in points:
                     self.c.execute("INSERT INTO POINTS (Point_X, Point_Y, RouteNum) VALUES (?,?,?)", (point[0], point[1], newID))
                     self.con.commit()
+                self.c.execute("DELETE from REQUESTROUTE WHERE RouteNum=?", (id,)) 
+                self.con.commit()
+                self.c.execute("DELETE FROM REQUESTPOINTS WHERE RouteNum=?", (id,))
+                self.con.commit()
                 CTkMessagebox(title="COMMITED!", message="Successfully Added!")
         elif args["value"] == 'INSPECT':
             self.c.execute("SELECT Point_X, Point_Y FROM REQUESTPOINTS WHERE RouteNum=?", (id,))
@@ -297,8 +315,8 @@ class App(customtkinter.CTk):
         elif args["column"] == 3:
             CTkMessagebox(title="Error", message="Altering Authors are not allowed", icon="cancel") 
         else:
-            text = "Enter Route Name" 
-            title = "Change Name"
+            text = "Enter new Route Name" 
+            title = "Route Name Change"
             if args["column"] == 2: 
                 text = "Change Route Color: (HEX OR VALID COLOR) \n VALID HEX: #rgb #rrggbb #rrrgggbbb \n (EXAMPLE: #F00 = RED)" 
                 title = "Change Color"
@@ -329,11 +347,83 @@ class App(customtkinter.CTk):
         self.unshowall()
         self.jeepframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.routes.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
+        self.refreshroutes()
         pass
 
     def unshowroutes(self):
+        self.jeeptable.destroy()
         self.jeepframe.place_forget()
         self.routes.configure(state='normal', fg_color='transparent',)
+        pass
+
+    def routetableclick(self, args):
+        id = int(self.jeeptable.get_row(row=args["row"])[0])
+        name = self.jeeptable.get_row(row=args["row"])[1]
+        if args["column"] == 0:
+            CTkMessagebox(title="Error", message="Altering IDs are not allowed", icon="cancel")
+        elif args["value"] == "INSPECT":
+            self.c.execute("SELECT Point_X, Point_Y FROM POINTS WHERE RouteNum=?", (id,))
+            points = self.c.fetchall()
+            color = self.jeeptable.get_row(row=args["row"])[2]
+            InspectWindow = ColtInspect(points, name, color)
+            InspectWindow.after(100, InspectWindow.lift)
+            InspectWindow.wait_window()
+        elif args["value"] == "DELETE":
+            msg = CTkMessagebox(title="Delete?", message=f"Delete Route: {name},\nRNum = {id} ?", icon="question", option_1="No", option_3="Yes")
+            response = msg.get()
+            if response=="Yes":
+                self.c.execute("DELETE from ROUTE WHERE RouteNum=?", (id,)) 
+                self.con.commit() 
+                CTkMessagebox(title="DELETED!", message="Successfully Deleted") 
+        else:
+            text = "Enter New Route Name"
+            title = "Route Name Change"
+            if args["column"] == 2:
+                text = "Change Route Color: (HEX OR VALID COLOR) \n VALID HEX: #rgb #rrggbb #rrrgggbbb \n (EXAMPLE: #F00 = RED)" 
+                title = "Change Color"
+            elif args["column"] == 3:
+                text = "Alter: 1 = True, 0 = False"
+                title = "Give Administrator"
+            tochange = args["value"]
+            dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange) #Prompt user for change
+            output = dialog.get_input()
+            if output and output != tochange:
+                if args["column"] == 1:
+                    self.c.execute("SELECT * FROM ROUTE WHERE Name = ?", (output,))
+                    checker = self.c.fetchall()
+                    if checker == []:
+                        self.c.execute("UPDATE ROUTE SET Name = ? WHERE RouteNum=?", (output, id))
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Route Name Already Taken", icon="cancel")
+                elif args["column"] == 2:
+                    self.c.execute("UPDATE ROUTE SET Color = ? WHERE RouteNum=?", (output, id)) #Change Query
+                    self.con.commit()
+                    CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                elif args["column"] == 3:
+                    output = int(output)
+                    if output == 1 or output == 0:
+                        self.c.execute("UPDATE ROUTE SET Disabled = ? WHERE RouteNum=?", (output, id)) #Change Query
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Please input 1 or 0", icon="cancel")
+        self.jeeptable.destroy()
+        self.refreshroutes()
+        pass
+    
+    def refreshroutes(self):
+        updated_table = list()
+        self.c.execute("SELECT * FROM ROUTE")
+        table = self.c.fetchall()
+        for items in table:
+            updated_table.append((items[0],items[1],items[2],items[3],"INSPECT", "DELETE"))
+        try:
+            self.jeeptable=CTkTable(master=self.jeepscroll, width=200, height=10, values=updated_table, command=self.routetableclick)
+            self.jeeptable.pack()
+        except:
+            pass
         pass
 
     #--------------- Todas ----------------
