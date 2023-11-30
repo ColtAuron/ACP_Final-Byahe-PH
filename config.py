@@ -897,9 +897,9 @@ c.execute(command)
 
 # c.execute("UPDATE REQUESTROUTE SET Author = 3 WHERE RouteNum=1")
 # con.commit()
-c.execute("DELETE FROM ROUTE WHERE RouteNum=5")
-con.commit()
-c.execute("SELECT * FROM ROUTE")
+# c.execute("DELETE FROM ROUTE WHERE RouteNum=5")
+# con.commit()
+c.execute("SELECT * FROM TODA")
 print(c.fetchall())
 
 

@@ -270,7 +270,7 @@ class App(customtkinter.CTk):
         pass
 
     def refreshrequests(self):
-        updated_table = None
+        updated_table = list()
         self.c.execute("SELECT RouteNum, Name, Color, Author FROM REQUESTROUTE")
         table = self.c.fetchall()
         for items in table:
@@ -451,6 +451,7 @@ class App(customtkinter.CTk):
         pass
     
     def unshowtodas(self):
+        self.todatable.destroy()
         self.todaframe.place_forget()
         self.todas.configure(state='normal', fg_color='transparent',)
         pass
@@ -461,8 +462,8 @@ class App(customtkinter.CTk):
         table = self.c.fetchall()
         for items in table:
             updated_table.append((items[0],items[3],items[4],"INSPECT", "DELETE"))
-            self.todatable=CTkTable(master=self.todascroll, width=200, height=10, values=updated_table, command=self.todatableclick)
-            self.todatable.pack()
+        self.todatable=CTkTable(master=self.todascroll, width=200, height=10, values=updated_table, command=self.todatableclick)
+        self.todatable.pack()
         pass
 
     #-------------- Bus -------------------
@@ -478,6 +479,7 @@ class App(customtkinter.CTk):
         pass
 
     def unshowbus(self):
+        self.bustable.destroy
         self.busframe.place_forget()
         self.bus.configure(state='normal', fg_color='transparent',)
         pass
@@ -488,8 +490,8 @@ class App(customtkinter.CTk):
         table = self.c.fetchall()
         for items in table:
             updated_table.append((items[0],items[3],items[4],"INSPECT", "DELETE"))
-            self.todatable=CTkTable(master=self.busscroll, width=200, height=10, values=updated_table, command=self.bustableclick)
-            self.todatable.pack()
+        self.bustable=CTkTable(master=self.busscroll, width=200, height=10, values=updated_table, command=self.bustableclick)
+        self.bustable.pack()
         pass
 
     #------------- Misc ------------------
