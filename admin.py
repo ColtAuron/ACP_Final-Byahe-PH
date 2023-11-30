@@ -137,10 +137,22 @@ class App(customtkinter.CTk):
 
         #--------- Toda Pins Frame ----------
         self.todaframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+        Todavalues = [['TodaID', 'LocationName', 'Disabled']]
+        self.todatitle= CTkTable(master=self.todaframe, width=160, height=10, values=Todavalues)
+        self.todatitle.place(relx=.3375, rely=.13, anchor=tkinter.CENTER)
+        self.todascroll= customtkinter.CTkScrollableFrame(self.todaframe, width=810, height=500)
+        self.todascroll.place(relx=.505, rely=.15, anchor=tkinter.N)
+        self.todatable=CTkTable(master=self.todascroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.todatableclick)
 
         #--------- Bus Pins Frame ----------
         self.busframe=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
-
+        Busvalues = [['TerminalID', 'LocationName', 'Disabled']]
+        self.bustitle= CTkTable(master=self.busframe, width=160, height=10, values=Busvalues)
+        self.bustitle.place(relx=.3375, rely=.13, anchor=tkinter.CENTER)
+        self.busscroll= customtkinter.CTkScrollableFrame(self.busframe, width=810, height=500)
+        self.busscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
+        self.bustable=CTkTable(master=self.busscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.bustableclick)
+        
         self.showroutes()
 
     
@@ -432,11 +444,25 @@ class App(customtkinter.CTk):
         self.unshowall()
         self.todaframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.todas.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
+        self.refreshtodas()
         pass
 
+    def todatableclick():
+        pass
+    
     def unshowtodas(self):
         self.todaframe.place_forget()
         self.todas.configure(state='normal', fg_color='transparent',)
+        pass
+
+    def refreshtodas(self):
+        updated_table = list()
+        self.c.execute("SELECT * FROM TODA")
+        table = self.c.fetchall()
+        for items in table:
+            updated_table.append((items[0],items[3],items[4],"INSPECT", "DELETE"))
+            self.todatable=CTkTable(master=self.todascroll, width=200, height=10, values=updated_table, command=self.todatableclick)
+            self.todatable.pack()
         pass
 
     #-------------- Bus -------------------
@@ -445,11 +471,25 @@ class App(customtkinter.CTk):
         self.unshowall()
         self.busframe.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
         self.bus.configure(state='disabled', fg_color='#808080', text_color_disabled='#ffffff')
+        self.refreshbus()
+        pass
+
+    def bustableclick():
         pass
 
     def unshowbus(self):
         self.busframe.place_forget()
         self.bus.configure(state='normal', fg_color='transparent',)
+        pass
+
+    def refreshbus(self):
+        updated_table = list()
+        self.c.execute("SELECT * FROM TERMINAL")
+        table = self.c.fetchall()
+        for items in table:
+            updated_table.append((items[0],items[3],items[4],"INSPECT", "DELETE"))
+            self.todatable=CTkTable(master=self.busscroll, width=200, height=10, values=updated_table, command=self.bustableclick)
+            self.todatable.pack()
         pass
 
     #------------- Misc ------------------
