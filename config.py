@@ -753,7 +753,7 @@ BatangasGrand_Terminal = Terminal(
 # con.execute(command)
 
 # command = ('''CREATE TABLE IF NOT EXISTS TERMINAL(
-#             TemiID INTEGER PRIMARY KEY,
+#             TemrID INTEGER PRIMARY KEY,
 #             Point_X FLOAT(3, 7),
 #             Point_Y FLOAT(3, 7),
 #             locName Varchar(100),
@@ -899,7 +899,7 @@ c.execute(command)
 # con.commit()
 # c.execute("DELETE FROM ROUTE WHERE RouteNum=5")
 # con.commit()
-c.execute("SELECT * FROM TODA")
+c.execute("SELECT TemiID, LocName FROM TERMINAL WHERE TemiID=1")
 print(c.fetchall())
 
 

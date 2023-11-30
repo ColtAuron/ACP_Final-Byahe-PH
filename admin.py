@@ -153,7 +153,7 @@ class App(customtkinter.CTk):
         self.busscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
         self.bustable=CTkTable(master=self.busscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.bustableclick)
         
-        self.showroutes()
+        self.showoverview()
 
     
     #----------- OV ------------
@@ -447,7 +447,53 @@ class App(customtkinter.CTk):
         self.refreshtodas()
         pass
 
-    def todatableclick():
+    def todatableclick(self, args):
+        id = int(self.todatable.get_row(row=args["row"])[0])
+        name = self.todatable.get_row(row=args["row"])[1]
+        if args["value"] == "INSPECT":
+            self.c.execute("SELECT Point_X, Point_Y FROM TODA WHERE TodaID=?", (id,))
+            point = self.c.fetchall()
+            InspectWindow = ColtInspect(point, name)
+            InspectWindow.after(100, InspectWindow.lift)
+            InspectWindow.wait_window()
+        elif args["value"] == "DELETE":
+            msg = CTkMessagebox(title="Delete?", message=f"Delete Point: {name},\nRNum = {id} ?", icon="question", option_1="No", option_3="Yes")
+            response = msg.get()
+            if response=="Yes":
+                self.c.execute("DELETE from TODA WHERE TodaID=?", (id,)) 
+                self.con.commit() 
+                CTkMessagebox(title="DELETED!", message="Successfully Deleted")
+        elif args["column"] == 0:
+            CTkMessagebox(title="Error", message="Altering IDs are not allowed", icon="cancel")
+        else:
+            text = "Enter New Location Name"
+            title = "Location Name Change"
+            if args["column"] == 2:
+                text = "Alter: 1 = True, 0 = False"
+                title = "Give Administrator"
+            tochange = args["value"]
+            dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange) #Prompt user for change
+            output = dialog.get_input()
+            if output and output != tochange:
+                if args["column"] == 1:
+                    self.c.execute("SELECT * FROM TODA WHERE locName=?", (output,))
+                    username_table = self.c.fetchall()
+                    if username_table == []:
+                        self.c.execute("UPDATE TODA SET locName = ? WHERE TodaID=?", (output, id)) #Change Query
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Location Name Already Taken", icon="cancel")
+                else:
+                    output = int(output)
+                    if output == 1 or output == 0:
+                        self.c.execute("UPDATE TODA SET Disabled = ? WHERE TodaID=?", (output, id)) #Change Query
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Please input 1 or 0", icon="cancel")
+        self.todatable.destroy()
+        self.refreshtodas()
         pass
     
     def unshowtodas(self):
@@ -460,10 +506,14 @@ class App(customtkinter.CTk):
         updated_table = list()
         self.c.execute("SELECT * FROM TODA")
         table = self.c.fetchall()
+        
         for items in table:
             updated_table.append((items[0],items[3],items[4],"INSPECT", "DELETE"))
-        self.todatable=CTkTable(master=self.todascroll, width=200, height=10, values=updated_table, command=self.todatableclick)
-        self.todatable.pack()
+        try:
+            self.todatable=CTkTable(master=self.todascroll, width=200, height=10, values=updated_table, command=self.todatableclick)
+            self.todatable.pack()
+        except:
+            pass
         pass
 
     #-------------- Bus -------------------
@@ -475,7 +525,53 @@ class App(customtkinter.CTk):
         self.refreshbus()
         pass
 
-    def bustableclick():
+    def bustableclick(self, args):
+        id = int(self.bustable.get_row(row=args["row"])[0])
+        name = self.bustable.get_row(row=args["row"])[1]
+        if args["value"] == "INSPECT":
+            self.c.execute("SELECT Point_X, Point_Y FROM TERMINAL WHERE TemiID=?", (id,))
+            point = self.c.fetchall()
+            InspectWindow = ColtInspect(point, name)
+            InspectWindow.after(100, InspectWindow.lift)
+            InspectWindow.wait_window()
+        elif args["value"] == "DELETE":
+            msg = CTkMessagebox(title="Delete?", message=f"Delete Point: {name},\nRNum = {id} ?", icon="question", option_1="No", option_3="Yes")
+            response = msg.get()
+            if response=="Yes":
+                self.c.execute("DELETE from TERMINAL WHERE TemiID=?", (id,)) 
+                self.con.commit() 
+                CTkMessagebox(title="DELETED!", message="Successfully Deleted")
+        elif args["column"] == 0:
+            CTkMessagebox(title="Error", message="Altering IDs are not allowed", icon="cancel")
+        else:
+            text = "Enter New Location Name"
+            title = "Location Name Change"
+            if args["column"] == 2:
+                text = "Alter: 1 = True, 0 = False"
+                title = "Give Administrator"
+            tochange = args["value"]
+            dialog = ColtInputDialog(text=text, title=title, placeholder_text=tochange) #Prompt user for change
+            output = dialog.get_input()
+            if output and output != tochange:
+                if args["column"] == 1:
+                    self.c.execute("SELECT * FROM TERMINAL WHERE locName=?", (output,))
+                    username_table = self.c.fetchall()
+                    if username_table == []:
+                        self.c.execute("UPDATE TERMINAL SET locName = ? WHERE TemiID=?", (output, id)) #Change Query
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Location Name Already Taken", icon="cancel")
+                else:
+                    output = int(output)
+                    if output == 1 or output == 0:
+                        self.c.execute("UPDATE TERMINAL SET Disabled = ? WHERE TemiID=?", (output, id)) #Change Query
+                        self.con.commit()
+                        CTkMessagebox(title="COMMITED!", message="Successfully Changed!")
+                    else:
+                        CTkMessagebox(title="Error", message="Please input 1 or 0", icon="cancel")
+        self.bustable.destroy()
+        self.refreshbus()
         pass
 
     def unshowbus(self):
@@ -490,8 +586,11 @@ class App(customtkinter.CTk):
         table = self.c.fetchall()
         for items in table:
             updated_table.append((items[0],items[3],items[4],"INSPECT", "DELETE"))
-        self.bustable=CTkTable(master=self.busscroll, width=200, height=10, values=updated_table, command=self.bustableclick)
-        self.bustable.pack()
+        try:
+            self.bustable=CTkTable(master=self.busscroll, width=200, height=10, values=updated_table, command=self.bustableclick)
+            self.bustable.pack()
+        except:
+            pass
         pass
 
     #------------- Misc ------------------
@@ -541,8 +640,4 @@ class ColtInspect(customtkinter.CTkToplevel):
         self.grab_release
         self.destroy()
         
-
-
-
-
 App().mainloop()
