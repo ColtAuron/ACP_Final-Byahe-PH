@@ -479,7 +479,7 @@ class App(customtkinter.CTk):
         pass
 
     def unshowbus(self):
-        self.bustable.destroy
+        self.bustable.destroy()
         self.busframe.place_forget()
         self.bus.configure(state='normal', fg_color='transparent',)
         pass
