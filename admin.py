@@ -8,6 +8,7 @@ from CTkMessagebox import CTkMessagebox
 from coltinputdialog import ColtInputDialog
 import re
 from tkintermapview import TkinterMapView
+import adminlogin
 
 class App(customtkinter.CTk):
     def __init__(self, *args, **kwargs):
@@ -64,6 +65,15 @@ class App(customtkinter.CTk):
         self.todas.place(relx=0.5, rely=0.49, anchor=tkinter.CENTER)
         self.bus=customtkinter.CTkButton(self.sidebar, font=self.font2, text='Bus Pins', fg_color="transparent", hover_color="#808080", corner_radius=0, width=270, height=50, command=self.showbus)
         self.bus.place(relx=0.5, rely=0.57, anchor=tkinter.CENTER)
+
+        #--------- Login Frame ----------
+
+        self.LoginFrame=customtkinter.CTkFrame(master=self.mainframe, width=1000, height=700, corner_radius=20)
+        self.LoginFrame.place(relx=0.6, rely=.5, anchor=tkinter.CENTER)
+        self.LoginButton=customtkinter.CTkButton(master=self.LoginFrame, text="Login", command=self.showlogin)
+        self.LoginButton.place(relx=0.5, rely=.5, anchor=tkinter.CENTER)
+        self.LoginLabel=customtkinter.CTkLabel(master=self.LoginFrame, font=self.font1, text='Login', text_color='#fff')
+        self.LoginLabel.place(relx=.5, rely=.35, anchor=tkinter.N)
 
         #--------- OV Frame ----------
 
@@ -152,9 +162,22 @@ class App(customtkinter.CTk):
         self.busscroll= customtkinter.CTkScrollableFrame(self.busframe, width=810, height=500)
         self.busscroll.place(relx=.505, rely=.15, anchor=tkinter.N)
         self.bustable=CTkTable(master=self.busscroll, width=200, height=10, values=[[1,2,3,4,5]], command=self.bustableclick)
-        
-        self.showoverview()
 
+        self.overview.configure(state='disabled')
+        self.users.configure(state='disabled')
+        self.requests.configure(state='disabled')
+        self.routes.configure(state='disabled')
+        self.todas.configure(state='disabled')
+        self.bus.configure(state='disabled')
+
+    def showlogin(self):
+        AL = adminlogin.App()
+        output = AL.get_input()
+        if output == True:
+            self.LoginFrame.destroy()
+            CTkMessagebox(title="Welcome", message="Welcome Admin!")
+            self.showoverview()
+        pass
     
     #----------- OV ------------
 
