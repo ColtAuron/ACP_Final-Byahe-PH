@@ -902,14 +902,4 @@ c.execute(command)
 c.execute("SELECT TemiID, LocName FROM TERMINAL WHERE TemiID=1")
 print(c.fetchall())
 
-
 con.close()
-
-
-
-
-
-
-
-
-
